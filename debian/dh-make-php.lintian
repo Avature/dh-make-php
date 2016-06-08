@@ -1,0 +1,5 @@
+dh-make-php: extra-license-file usr/share/dh-make-php/licenses/php-license
+dh-make-php: script-not-executable ./usr/share/dh-make-php/pecl.template/rules
+dh-make-php: script-not-executable ./usr/share/dh-make-php/pecl.template/rules.CDBS
+dh-make-php: script-not-executable ./usr/share/dh-make-php/dh-make-php.lib
+dh-make-php: missing-dep-for-interpreter make => make | build-essential | dpkg-dev (./usr/share/dh-make-php/pear.template/rules)

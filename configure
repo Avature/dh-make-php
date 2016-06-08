@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# usage() {{{
+# print summary of options
+usage()
+{
+	cat <<eof
+This is configuration script for dh-make-php
+
+Usage: configure [option]
+
+Options:
+  --help          show this usage information
+  --prefix        set base directory for installation
+eof
+}
+# }}}
+
+if [ $# = 0 ]; then
+	usage
+	exit 0
+fi
+
+while
+	case $1 in
+		--help|-h) # print usage
+			usage
+			exit 0
+			;;
+		--prefix) # set install prefix
+			PREFIX="$2"; shift
+			;;
+		"") break;;
+		*)
+			echo "configure: unknown option \`$1'." >&2
+			exit
+			;;
+	esac
+do test $# -gt 0 && shift; done
+
+VERSION=`cat VERSION`
+sed -e "s:^PREFIX=.*$:PREFIX=$PREFIX:" -e "s:^PROGVERSION=.*$:PROGVERSION=$VERSION:" dh-make-pecl > dh-make-pecl.new
+mv dh-make-pecl.new dh-make-pecl
+chmod 755 dh-make-pecl
+sed -e "s:^PREFIX=.*$:PREFIX=$PREFIX:" -e "s:^PROGVERSION=.*$:PROGVERSION=$VERSION:" dh-make-pear > dh-make-pear.new
+mv dh-make-pear.new dh-make-pear
+chmod 755 dh-make-pear
+
+echo "Prefix set to '${PREFIX}'"
+echo ""
+echo "Run 'make install' to install the programm."

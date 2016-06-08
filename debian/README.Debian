@@ -1,0 +1,8 @@
+dh-make-php for Debian
+----------------------
+
+dh-make-php contains two programs dh-make-pecl and  dh-make-pear
+to faciliate the creation of source packages from PECL or PEAR
+extension for PHP>
+
+ -- Uwe Steinmann <steinm@debian.org>, Fri, 27 Feb 2004 21:41:12 +0200

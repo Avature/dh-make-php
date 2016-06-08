@@ -1,0 +1,11 @@
+Source: ##packagename##
+Section: web
+Priority: optional
+Maintainer: ##maintainer##
+Build-Depends: debhelper (>= 7), dh-make-php (>= 0.2.3), cdbs
+Standards-Version: 3.9.1
+
+Package: ##packagename##
+Architecture: ##architecture##
+Depends: php-pear, ${misc:Depends} ##depends##
+Description: ##summary##

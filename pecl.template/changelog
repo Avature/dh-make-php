@@ -1,0 +1,6 @@
+##packagename## (##version##-1) unstable; urgency=low
+
+  * Initial Release (Closes: #<ITP bug number>).
+
+ -- ##maintainer##  ##date##
+

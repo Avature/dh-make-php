@@ -1,0 +1,47 @@
+# Vietnamese translation for php4-ps.
+# Copyright © 2005 Free Software Foundation, Inc.
+# Clytie Siddall <clytie@riverland.net.au>, 2005.
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: php4-ps 1.3.1-5.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-02-15 10:13+0100\n"
+"PO-Revision-Date: 2005-07-04 14:43+0930\n"
+"Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
+"Language-Team: Vietnamese <gnomevi-list@lists.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"X-Generator: LocFactoryEditor 1.2.2\n"
+
+#.Type: boolean
+#.Description
+#:../templates:4
+msgid "Should ${extname} be added to /etc/php${phpversion}/${sapiconfig}/php.ini?"
+msgstr "Có nên thêm «${extname}» vào «/etc/php${phpversion}/${sapiconfig}/php.ini» không?"
+
+#.Type: boolean
+#.Description
+#:../templates:4
+msgid ""
+"You are installing ${extname} support for php${phpversion}, and it is not yet enabled in "
+"the configuration for the ${sapiconfig} SAPI.  Do you want this extension to "
+"be enabled now?"
+msgstr "Lúc này bạn đang cài đặt cách hỗ trợ «${extname}» cho PHP${phpversion}, nhưng mà nó chưa bật trong cấu hình cho SAPI «${sapiconfig}». Bạn có muốn hiệu lực phần mở rộng này ngay bây giờ không?"
+
+#.Type: boolean
+#.Description
+#:../templates:12
+msgid "Should ${extname} be removed from /etc/php${phpversion}/${sapiconfig}/php.ini?"
+msgstr "Có nên loại bỏ «${extname}» ra «/etc/php${phpversion}/${sapiconfig}/php.ini» không?"
+
+#.Type: boolean
+#.Description
+#:../templates:12
+msgid ""
+"You are removing ${extname} support for php${phpversion}, but it is still enabled in the "
+"configuration for the ${sapiconfig} SAPI.  Leaving this in place will "
+"probably cause problems when trying to use PHP."
+msgstr "Lúc này bạn đang loại bỏ cách hỗ trợ «${extname}» ra PHP${phpversion}, nhưng mà nó vẫn còn bật trong cấu hình cho SAPI «${sapiconfig}». Nếu bạn không vô hiệu hóa nó, rất có thể gây ra lỗi trong khi cố sử dụng PHP."

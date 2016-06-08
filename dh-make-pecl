@@ -1,0 +1,332 @@
+#!/bin/sh
+#
+# dh-make-pecl creates a debian package from a pecl package
+#
+# Copyright (C) 2005-2010 by Uwe Steinmann <steinm@debian.org>
+# under the GNU GPL license version 2.0 or 2.1.
+# You should have received a copy of the GPL license
+# along with this program if you did not you can find it
+# at http://www.gnu.org/.
+
+PROGNAME=dh-make-pecl
+PROGVERSION=0.3.0
+PREFIX=/usr
+
+DEBPACKAGEPREFIX=php-
+DEBTEMPDIR=${PREFIX}/share/dh-make-php/pecl.template
+PACKAGEDOCFILES="README readme CREDITS TODO AUTHORS"
+# if you change the examples directory make sure to adjust the
+# regular expression to set the PACKAGEDOCFILES
+PACKAGEEXPFILES="examples"
+PHPPKGINFO=${PREFIX}/share/dh-make-php/phppkginfo
+DEBMAINTAINER=
+DEPENDS=
+BUILDDEPENDS=
+DEPARCH=any
+DONTUSECONFD=false
+
+PHPVERSIONS="5"
+
+if [ -d /etc/php5/mods-available ];
+then
+	PHP55CONFD=true
+else
+	PHP55CONFD=false
+fi
+
+. ${PREFIX}/share/dh-make-php/dh-make-php.lib
+
+# usage() {{{
+# print summary of options
+usage()
+{
+	cat <<eof
+This is ${PROGNAME} Version ${PROGVERSION}
+Copyright (c) 2004-2005 Uwe Steinmann <steinm@debian.org>
+
+Usage: ${PROGNAME} [options] pecl-package
+
+pecl-package is a tgz file as it is downloaded by 'pecl download'.
+Options:
+  --help | -h     show this usage information
+  --version | -v  show version of program
+  --maintainer    maintainer of the debian package
+  --arch          set architecture (defaults to 'any')
+  --depends       set more depends aside php
+  --build-depends set more build-depends aside php
+  --prefix        set prefix for source package name (default is '${DEBPACKAGEPREFIX}')
+  --templatedir   set alternative directory for templates
+                  (default is ${DEBTEMPDIR})
+  --only          set PHP major version (4 or 5) to build modules for
+                  (default is both) THIS OPTION IS DEPRECATED!!!!
+  --phpversion    set the PHP major versions to build modules for
+                  (default is 5)
+  --dont-use-confd  do not create package with ps.ini in conf.d, but modify
+                  global php.ini by debconf
+  --php55-conf    force php5.5-style conf.d directory layout
+                  (is default if directory /etc/php5/mods-available exists)
+  --no-php55-conf disable php5.5-style conf.d directory layout, even if dir exists
+eof
+}
+# }}}
+
+# command line options {{{
+if [ $# = 0 ]; then
+	usage
+	exit 0
+fi
+
+while
+	case $1 in
+		--help|-h) # print usage
+			usage
+			exit 0
+			;;
+		--version|-v) # show version
+      echo ${PROGVERSION}
+			exit 0
+			;;
+		--maintainer) # set maintainer of debian package
+			DEBMAINTAINER="$2"; shift
+			;;
+		--arch) # set architecture of debian package
+			DEBARCH="$2"; shift
+			;;
+		--depends) # set extra depends for debian package
+			DEPENDS=", $2"; shift
+			;;
+		--build-depends) # set extra build-depends for debian package
+			BUILDDEPENDS=", $2"; shift
+			;;
+		--prefix) # set prefix for name of debian package
+			DEBPACKAGEPREFIX="$2"; shift
+			;;
+		--package-name) # overwrite module name from package.xml
+			OVERPACKAGENAME=$2; shift
+			;;
+		--templatedir) # set alternative template dir
+			DEBTEMPDIR="$2"; shift
+			;;
+		--only) # only create modules for one of php4|php5
+			echo "The option --only is deprecated. Please check the manual page."
+			exit 0
+
+			PHPVERSIONS=$2; shift
+			if [ "$PHPVERSIONS" != "4" ] && [ "$PHPVERSIONS" != "5" ]
+			then
+				echo "Invalid argument to --only."
+				exit 0
+			fi
+			;;
+		--phpversion) # create modules for the given php versions
+			PHPVERSIONS=$2; shift
+			echo $PHPVERSIONS | grep "[4-5] [4-5]"
+			if [ $? -eq 0 ] ; then
+				echo "Invalid argument to --phpversion."
+				exit 0
+			fi
+			;;
+		--dont-use-confd) # place ini file in conf.d
+			DONTUSECONFD=true;
+			;;
+		--php55-conf)
+			PHP55CONFD=true;
+			;;
+		--no-php55-conf)
+			PHP55CONFD=false;
+			;;
+		"")
+			break
+			;;
+		*)
+			PECLPACKAGENAME="$1"
+			break
+			;;
+	esac
+do test $# -gt 0 && shift; done
+# }}}
+
+if [ -n "${PECLPACKAGENAME}" ]; then
+	if [ -f ${PECLPACKAGENAME} ]; then
+		tar xzf ${PECLPACKAGENAME}
+	else
+		if TEMPMSG=$(/usr/bin/pecl download ${PECLPACKAGENAME} 2> /dev/null | grep -v ^WARNING); then
+			echo ${TEMPMSG}
+			PECLPACKAGENAME=$(echo ${TEMPMSG} | sed 's/.*downloading \([^ ]*\).*/\1/g' )
+			tar xzf ${PECLPACKAGENAME}
+		else
+			echo "Downloading pecl package '${PECLPACKAGENAME}' failed!";
+			echo "Check http://pecl.php.net/ for available packages.";
+			exit 0
+		fi
+	fi
+else
+	usage
+	exit 0
+fi
+
+# get information about package from package.xml
+eval_package
+
+if [ -n "${OVERPACKAGENAME}" ]; then
+	mv ${PHP_PKG_NAME}-${VERSION} ${OVERPACKAGENAME}-${VERSION}
+	PHP_PKG_NAME=${OVERPACKAGENAME}
+	PHP_PKG_LOWNAME=$(echo $PHP_PKG_NAME | awk '{print tolower($0)}' | sed 's/_/-/g')
+fi
+
+SRCPACKAGEDIR=${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}-${VERSION}
+
+echo "Creating debian source package: ${SRCPACKAGEDIR}"
+echo "Upstream is: ${UPSTREAM}"
+
+# sets $DEBMAINTAINER
+get_maintainer
+
+if [ -d ${SRCPACKAGEDIR} ] ; then
+	echo "Directory '${SRCPACKAGEDIR}' already exists."
+	exit
+fi
+ln -s ${PECLPACKAGENAME} ${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}_${VERSION}.orig.tar.gz
+mkdir ${SRCPACKAGEDIR}
+mv ${PHP_PKG_NAME}-${VERSION} ${SRCPACKAGEDIR}
+mv package.xml ${SRCPACKAGEDIR}
+mkdir -p ${SRCPACKAGEDIR}/debian
+
+cp ${DEBTEMPDIR}/compat ${SRCPACKAGEDIR}/debian
+
+install_docfiles
+install_expfiles
+
+sed -e "s/##date##/`(LC_ALL=C; date -R)`/g" \
+    -e "s/##maintainer##/${DEBMAINTAINER}/g" \
+    -e "s/##upstream##/${UPSTREAM}/g" \
+    -e "s/##license##/${LICENSE}/g" \
+    -e "s/##releaseyear##/${RELEASEYEAR}/g" \
+    -e "s/##peclpkgname##/${PHP_PKG_NAME}/g" \
+    ${DEBTEMPDIR}/copyright > ${SRCPACKAGEDIR}/debian/copyright
+if [ -n "${LICENSEFILE}" ]; then
+	cat "${LICENSEFILE}" >> ${SRCPACKAGEDIR}/debian/copyright
+fi
+
+# changelog.xsl is copied into the source package in order to prevent
+# a dependency on dh-make-php
+cp ${PREFIX}/share/dh-make-php/xslt/changelog.xsl ${SRCPACKAGEDIR}/debian/
+
+BINARYTARGETS=""
+BUILDTARGETS=""
+CLEANTARGETS=""
+for PHPVER in $PHPVERSIONS
+do
+	BINARYTARGETS="${BINARYTARGETS}binary-arch-v${PHPVER} "
+	BUILDTARGETS="${BUILDTARGETS}build-v${PHPVER} "
+	CLEANTARGETS="${CLEANTARGETS}clean-v${PHPVER} "
+	PHPDEVDEPENDS="${PHPDEVDEPENDS}, php${PHPVER}-dev "
+done
+
+sed -e "s/##packagename##/${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}/g" \
+    -e "s/##peclpackagerealname##/${PHP_PKG_NAME}/g" \
+    -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
+    -e "s/##version##/${VERSION}/g" \
+    -e "s/##binarytargets##/${BINARYTARGETS}/g" \
+    -e "s/##buildtargets##/${BUILDTARGETS}/g" \
+    -e "s/##cleantargets##/${CLEANTARGETS}/g" \
+    -e "s/##php55confd##/${PHP55CONFD}/g" \
+    -e "s/##packageprefix##/php/g" \
+    ${DEBTEMPDIR}/rules > ${SRCPACKAGEDIR}/debian/rules
+chmod 755 ${SRCPACKAGEDIR}/debian/rules
+
+sed -e "s/##packagename##/${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}/g" \
+    -e "s/##date##/`(LC_ALL=C; date -R)`/g" \
+    -e "s/##maintainer##/${DEBMAINTAINER}/g" \
+    -e "s/##version##/${VERSION}/g" \
+		${DEBTEMPDIR}/changelog > ${SRCPACKAGEDIR}/debian/changelog
+
+sed -e "s/##packagename##/${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}/g" \
+    -e "s/##date##/`(LC_ALL=C; date -R)`/g" \
+    -e "s/##maintainer##/${DEBMAINTAINER}/g" \
+		${DEBTEMPDIR}/README.Debian > ${SRCPACKAGEDIR}/debian/README.Debian
+
+sed -e "s/##peclpackagename##/${PHP_PKG_NAME}/g" \
+		${DEBTEMPDIR}/watch > ${SRCPACKAGEDIR}/debian/watch
+
+sed -e "s/##phpdevdepends##/${PHPDEVDEPENDS}/g" \
+		${DEBTEMPDIR}/control > ${SRCPACKAGEDIR}/debian/control
+
+if [ "$DONTUSECONFD" = "false" ]; then
+sed -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
+		${DEBTEMPDIR}/php.ini > ${SRCPACKAGEDIR}/debian/${PHP_PKG_LOWNAME}.ini
+fi
+
+#cp ${DEBTEMPDIR}/control ${SRCPACKAGEDIR}/debian/control
+#cp ${DEBTEMPDIR}/templates ${SRCPACKAGEDIR}/debian/templates
+if [ "$DONTUSECONFD" = "true" ]; then
+	cp -r ${DEBTEMPDIR}/po ${SRCPACKAGEDIR}/debian/po
+fi
+
+# Generate templates specific to php[4|5]-(module) binary packages
+for PHPVERSION in $PHPVERSIONS
+do
+	BINPREFIX=php${PHPVERSION} #${DEBPACKAGEPREFIX}${PHPVERSION}
+	BINPACKAGE=${BINPREFIX}-${PHP_PKG_LOWNAME}
+	if [ "$DONTUSECONFD" = "true" ]; then
+		sed -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
+			-e "s/##phpversion##/${PHPVERSION}/g" \
+				${DEBTEMPDIR}/postinst > ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.postinst
+		chmod 755 ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.postinst
+	
+		sed -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
+			-e "s/##phpversion##/${PHPVERSION}/g" \
+				${DEBTEMPDIR}/prerm > ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.prerm
+		chmod 755 ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.prerm
+	else
+		if [ "$PHP55CONFD" = "true" ]; then
+			sed -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
+				-e "s/##phpversion##/${PHPVERSION}/g" \
+					${DEBTEMPDIR}/php55postinst > ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.postinst
+
+			chmod 755 ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.postinst
+		fi
+	fi
+	
+	sed -e "s/##phpversion##/${PHPVERSION}/g" \
+		${DEBTEMPDIR}/dirs > ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.dirs
+	
+	if [ "$DONTUSECONFD" = "true" ]; then
+		sed -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
+			-e "s/##phpversion##/${PHPVERSION}/g" \
+				${DEBTEMPDIR}/config > ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.config
+		chmod 755 ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.config
+	fi
+
+	sed -e "s/##phpversion##/${PHPVERSION}/g" \
+		-e "s/##lowpackage##/${PHP_PKG_LOWNAME}/g" \
+		-e "s/##package##/${PHP_PKG_NAME}/g" \
+		-e "s/##binpackagename##/${BINPACKAGE}/g" \
+		${DEBTEMPDIR}/control-bin >> ${SRCPACKAGEDIR}/debian/control
+
+	${PHPPKGINFO} ${SRCPACKAGEDIR} summary|sed -e 's/^/ /g' >> ${SRCPACKAGEDIR}/debian/control
+	echo ""  >> ${SRCPACKAGEDIR}/debian/control
+	echo " ."  >> ${SRCPACKAGEDIR}/debian/control
+	${PHPPKGINFO} ${SRCPACKAGEDIR} description|fmt -w70|sed -e 's/^[[:space:]]*$/./g'|sed -e 's/^/ /g' >> ${SRCPACKAGEDIR}/debian/control
+	echo ""  >> ${SRCPACKAGEDIR}/debian/control
+	echo ""  >> ${SRCPACKAGEDIR}/debian/control
+
+	if [ "$DONTUSECONFD" = "true" ]; then
+		cp ${DEBTEMPDIR}/templates ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.templates
+	fi
+done
+
+HASPHPSCRIPT=$(${PHPPKGINFO} ${SRCPACKAGEDIR} hasphpscript)
+if [ "$HASPHPSCRIPT" = "1" ]; then
+	DEPENDS="${DEPENDS}, php${PHPVERSION}-cli"
+fi
+
+sed -e "s/##packagename##/${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}/g" \
+    -e "s/##maintainer##/${DEBMAINTAINER}/g" \
+    -e "s/##depends##/${DEPENDS}/g" \
+    -e "s/##builddepends##/${BUILDDEPENDS}/g" \
+    -e "s/##architecture##/${DEPARCH}/g" \
+    -i ${SRCPACKAGEDIR}/debian/control
+
+echo "modules/${PHP_PKG_LOWNAME}.so" > ${SRCPACKAGEDIR}/debian/pecl
+

@@ -1,0 +1,9 @@
+if [ "$1" = "configure" ]; then
+	for SAPI in apache2 apache cgi cli; do
+		if [ -f /etc/php4/$SAPI/php.ini ]; then
+			if ! grep -q "^[[:space:]]*extension[[:space:]]*=[[:space:]]*#PECLMOD#" /etc/php4/$SAPI/php.ini; then
+				echo "extension=#PECLMOD#" >> /etc/php4/$SAPI/php.ini
+			fi
+		fi
+	done
+fi

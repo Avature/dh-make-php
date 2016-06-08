@@ -1,0 +1,58 @@
+For changes after 0.0.13 see the debian changelog file
+
+dh-make-php (0.0.13)
+	* fixed program options --templatedir and --prefix
+	* use just one templates file for php4-xx and php5-xx
+	* added many translations for debconf settings
+
+ -- Uwe Steinmann <steinm@debian.org>  Mon, 13 Feb 2006 11:37:35 +0100
+
+dh-make-php (0.0.11)
+	* fixed debian bug #329809 and 329807
+	* fold description of generated debian package at a width of 70
+	* use more consistient variable names in rules file of generated debian pkg
+	* fixed debian bug #329386
+	* determine PEAR_PHP_DIR and PEAR_PHP_DOC in pear.template/rules
+	  should now work with all versions of pear
+
+ -- Uwe Steinmann <steinm@debian.org>  Thu, 22 Sep 2005 11:00:01 +0200
+
+dh-make-php (0.0.10)
+	* create binary packages for php4/5 from on source
+	* various error fixes
+
+ -- Uwe Steinmann <steinm@debian.org>  Tue, 13 Sep 2005 08:33:59 +0200
+
+dh-make-php (0.0.9)
+	* if the name of the package is passed to dh-make-pecl|pear
+	  it will download it from pecl/pear
+	* updated man page
+
+dh-make-php (0.0.8)
+	* do no move but symling original archive
+	* add more elaborated license text to debian/copyright
+
+dh-make-php (0.0.7)
+	* uupdate can be used for create debian source package
+
+dh-make-php (0.0.6)
+	* examples are no longer listed as doc files
+	* removed preset for DEBMAINTAINER
+
+ -- Uwe Steinmann <steinm@debian.org>  Thu, 24 Jun 2005 22:37:14 +0200
+
+dh-make-php (0.0.2)
+
+  * added dh-make-pear
+  * many code cleanups
+  * much better debian package
+  * added README, INSTALL, ChangeLog
+
+ -- Uwe Steinmann <steinm@debian.org>  Mon, 01 Mar 2004 10:51:32 +0200
+
+dh-make-php (0.0.1)
+
+  * Initial Release.
+
+ -- Uwe Steinmann <steinm@debian.org>  Fri, 27 Feb 2004 13:41:12 +0200
+

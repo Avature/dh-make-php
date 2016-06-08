@@ -1,0 +1,20 @@
+This package was debianized by ##maintainer## using dh-make-pecl
+on ##date##.
+
+It was downloaded from http://pecl.php.net/package/##peclpkgname##
+
+Upstream Author(s):
+
+    ##upstream##
+
+Copyright:
+
+    Copyright (C) ##releaseyear## ##upstream##
+
+License:
+
+    ##license##
+
+The Debian packaging is copyright 2009, ##maintainer## and
+is licensed under the GPL, see `/usr/share/common-licenses/GPL'.
+

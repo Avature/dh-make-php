@@ -1,0 +1,3 @@
+version=3
+http://pecl.php.net/package/##peclpackagename## \
+  /get/##peclpackagename##-([\d\.]*).tgz  debian  uupdate

@@ -1,0 +1,18 @@
+How to install dh-make-php
+--------------------------
+
+1. Run configure and pass the directory for which the package shall
+   be configure with the option -prefix
+
+   ./configure --prefix /usr
+
+2. Run make to create the man pages
+
+   make
+
+3. Run 'make install' to install the package. You can set DESTDIR
+   to the destination directory, if you do not want to install the
+   package into the directory specified with the prefix option of
+   ./configure.
+
+   make DESTDIR=/foo/bar install

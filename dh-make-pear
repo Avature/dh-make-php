@@ -1,0 +1,207 @@
+#!/bin/sh
+#
+# dh-make-pear creates a debian package from a pear package
+#
+# Copyright (C) 2005-2006 by Uwe Steinmann <steinm@debian.org>
+# under the GNU GPL license version 2.0 or 2.1.
+# You should have received a copy of the GPL license
+# along with this program if you did not you can find it
+# at http://www.gnu.org/.
+
+PROGNAME=dh-make-pear
+PROGVERSION=0.3.0
+PREFIX=/usr
+
+DEBPACKAGEPREFIX=php-
+DEBTEMPDIR=${PREFIX}/share/dh-make-php/pear.template
+PACKAGEDOCFILES="README readme CREDITS TODO AUTHORS"
+# if you change the examples directory make sure to adjust the
+# regular expression to set the PACKAGEDOCFILES
+PACKAGEEXPFILES="examples"
+PHPPKGINFO=${PREFIX}/share/dh-make-php/phppkginfo
+DEBMAINTAINER=
+DEPENDS=
+DEBARCH=all
+PREFSTATE=stable
+RENAMESOURCE=
+
+. ${PREFIX}/share/dh-make-php/dh-make-php.lib
+
+# usage() {{{
+# print summary of options
+usage()
+{
+	cat <<eof
+This is ${PROGNAME} Version ${PROGVERSION}
+Copyright (c) 2004-2005 Uwe Steinmann <steinm@debian.org>
+
+Usage: ${PROGNAME} [options] pear-package
+
+pear-package is a tgz file as it is downloaded by 'pear download'.
+Options:
+  --help | -h     show this usage information
+  --version | -v  show version of program
+  --maintainer    maintainer of the debian package
+  --rename        rename the source tarball instead of symlinking it
+  --arch          set architecture (defaults to 'all')
+  --state         set preferred_state for pear download (defaults to 'stable')
+  --depends       set more depends aside php
+  --prefix        set prefix for package name (default is '${DEBPACKAGEPREFIX}')
+  --templatedir   set alternative directory for templates
+                  (default is ${DEBTEMPDIR})
+
+eof
+}
+# }}}
+
+# command line options {{{
+if [ $# = 0 ]; then
+	usage
+	exit 0
+fi
+
+while
+	case $1 in
+		--help|-h) # print usage
+			usage
+			exit 0
+			;;
+		--version|-v) # show version
+      echo ${PROGVERSION}
+			exit 0
+			;;
+		--maintainer) # set maintainer of debian package
+			DEBMAINTAINER="$2"; shift
+			;;
+		--arch) # set architecture of debian package
+			DEBARCH="$2"; shift
+			;;
+		--state) # set architecture of debian package
+			PREFSTATE="$2"; shift
+			;;
+		--depends) # set extra depends for debian package
+			DEPENDS=", $2"; shift
+			;;
+		--prefix) # set prefix for name of debian package
+			DEBPACKAGEPREFIX="$2"; shift
+			;;
+		--rename) # rename the source tarball instead of symlinking
+			RENAMESOURCE=yes
+			;;
+		--templatedir) # set alternative template dir
+			DEBTEMPDIR="$2"; shift
+			;;
+		"")
+			break
+			;;
+		*)
+			PEARPACKAGENAME="$1"
+			break
+			;;
+	esac
+do test $# -gt 0 && shift; done
+# }}}
+
+if [ -n "${PEARPACKAGENAME}" ]; then
+	if [ -f ${PEARPACKAGENAME} ]; then
+		tar xzf ${PEARPACKAGENAME}
+	else
+		if TEMPMSG=$(/usr/bin/pear -D preferred_state=${PREFSTATE} download ${PEARPACKAGENAME}); then
+			echo ${TEMPMSG}
+			PEARPACKAGENAME=$(echo ${TEMPMSG} | awk -F ' ' '{print $2'})
+			tar xzf ${PEARPACKAGENAME}
+		else
+			echo "Downloading pear package '${PEARPACKAGENAME}' failed!";
+			echo "${TEMPMSG}"
+			echo "Check http://pear.php.net/ for available packages.";
+			exit 0
+		fi
+	fi
+else
+	usage
+	exit 0
+fi
+
+# get information about package from package.xml
+eval_package
+
+SRCPACKAGEDIR=${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}-${VERSION}
+
+echo "Creating debian source package: ${SRCPACKAGEDIR}"
+echo "Upstream is: ${UPSTREAM}"
+
+# sets $DEBMAINTAINER
+get_maintainer
+
+if [ -d ${SRCPACKAGEDIR} ] ; then
+	echo "Directory '${SRCPACKAGEDIR}' already exits."
+	exit
+fi
+if [ "${RENAMESOURCE}" = "yes" ]; then
+	if [ -e ${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}_${VERSION}.orig.tar.gz ]; then
+		rm ${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}_${VERSION}.orig.tar.gz
+	fi
+	mv ${PEARPACKAGENAME} ${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}_${VERSION}.orig.tar.gz
+else
+	ln -s ${PEARPACKAGENAME} ${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}_${VERSION}.orig.tar.gz
+fi
+mkdir ${SRCPACKAGEDIR}
+mv ${PHP_PKG_NAME}-${VERSION} ${SRCPACKAGEDIR}
+mv package.xml ${SRCPACKAGEDIR}
+mkdir -p ${SRCPACKAGEDIR}/debian
+
+cp ${DEBTEMPDIR}/compat ${SRCPACKAGEDIR}/debian
+cp ${DEBTEMPDIR}/dirs ${SRCPACKAGEDIR}/debian
+
+install_docfiles
+install_expfiles
+
+HASPHPSCRIPT=$(${PHPPKGINFO} ${SRCPACKAGEDIR} hasphpscript)
+if [ "$HASPHPSCRIPT" = "1" ]; then
+	DEPENDS="${DEPENDS}, php5-cli"
+fi
+
+sed -e "s/##date##/`(LC_ALL=C; date -R)`/g" \
+    -e "s/##maintainer##/${DEBMAINTAINER}/g" \
+    -e "s/##upstream##/${UPSTREAM}/g" \
+    -e "s/##license##/${LICENSE}/g" \
+    -e "s/##releaseyear##/${RELEASEYEAR}/g" \
+    -e "s/##pearpkgname##/${PHP_PKG_NAME}/g" \
+		${DEBTEMPDIR}/copyright > ${SRCPACKAGEDIR}/debian/copyright
+if [ -n "${LICENSEFILE}" ]; then
+	cat "${LICENSEFILE}" >> ${SRCPACKAGEDIR}/debian/copyright
+fi
+sed -e "s/##packagename##/${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}/g" \
+    -e "s/##maintainer##/${DEBMAINTAINER}/g" \
+    -e "s§##summary##§${SUMMARY}§g" \
+    -e "s/##depends##/${DEPENDS}/g" \
+    -e "s/##architecture##/${DEBARCH}/g" \
+		${DEBTEMPDIR}/control > ${SRCPACKAGEDIR}/debian/control
+		${PHPPKGINFO} ${SRCPACKAGEDIR} description | fmt -w 70|sed -e "s§^[ \t]*$§.§g" -e "s§^§ §g" >> ${SRCPACKAGEDIR}/debian/control
+sed -e "s/##packagename##/${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}/g" \
+    -e "s/##version##/${VERSION}/g" \
+    -e "s/##pearpkgname##/${PHP_PKG_NAME}/g" \
+		${DEBTEMPDIR}/rules > ${SRCPACKAGEDIR}/debian/rules
+chmod 755 ${SRCPACKAGEDIR}/debian/rules
+
+sed -e "s/##packagename##/${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}/g" \
+    -e "s/##date##/`(LC_ALL=C; date -R)`/g" \
+    -e "s/##maintainer##/${DEBMAINTAINER}/g" \
+    -e "s/##version##/${VERSION}/g" \
+		${DEBTEMPDIR}/changelog > ${SRCPACKAGEDIR}/debian/changelog
+
+sed -e "s/##packagename##/${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}/g" \
+    -e "s/##date##/`(LC_ALL=C; date -R)`/g" \
+    -e "s/##maintainer##/${DEBMAINTAINER}/g" \
+		${DEBTEMPDIR}/README.Debian > ${SRCPACKAGEDIR}/debian/README.Debian
+
+sed -e "s/##pearpkgname##/${PHP_PKG_NAME}/g" \
+		${DEBTEMPDIR}/watch > ${SRCPACKAGEDIR}/debian/watch
+
+#sed -e "s/##packagename##/${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}/g" \
+#		${DEBTEMPDIR}/postinst > ${SRCPACKAGEDIR}/debian/postinst
+#chmod 755 ${SRCPACKAGEDIR}/debian/postinst
+
+#sed -e "s/##pearpkgname##/${PHP_PKG_NAME}/g" \
+#		${DEBTEMPDIR}/prerm > ${SRCPACKAGEDIR}/debian/prerm
+#chmod 755 ${SRCPACKAGEDIR}/debian/prerm

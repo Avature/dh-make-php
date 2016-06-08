@@ -1,0 +1,4 @@
+Package: ##binpackagename##
+Architecture: ##architecture##
+Depends: ${shlibs:Depends}, ${php:Depends}, ${misc:Depends}##depends##
+Description: ##package## module for PHP ##phpversion##

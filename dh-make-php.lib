@@ -1,0 +1,83 @@
+#!/bin/sh
+
+get_maintainer() {
+	if [ -z "${DEBMAINTAINER}" ] ; then
+		echo -n "Guessing Maintainer: "
+		if [ -n "${DEBFULLNAME}" ] ; then
+			REALNAME=${DEBFULLNAME}
+		else
+			if [ -n "${USER}" ] ; then
+				MYUSER=${USER}
+			else
+				if [ -n "${LOGNAME}" ] ; then
+					MYUSER=${LOGNAME}
+				else
+					MYUSER=$(whoami)
+				fi
+			fi
+			if [ -n "${MYUSER}" ] ; then
+				REALNAME=$(awk -F: "/^${MYUSER}:/ { print \$5 }" /etc/passwd | sed -e "s/,.*//g")
+			else
+				echo "Failed determine real name! Consider using Option --maintainer."
+			fi
+		fi
+
+		if [ -n "${DEBEMAIL}" ] ; then
+			DEBMAINTAINER="${REALNAME} <${DEBEMAIL}>"
+		else
+			if [ -n "${EMAIL}" ]; then
+				DEBMAINTAINER="${REALNAME} <${EMAIL}>"
+			else
+				if [ -f /etc/mailname ] ; then
+					DEBMAINTAINER="${REALNAME} <${MYUSER}@`cat /etc/mailname`>"
+				else
+					echo "Failed determine mail address! Consider using Option --maintainer."
+				fi
+			fi
+		fi
+		if [ -z "${DEBMAINTAINER}" ] ; then
+			echo "Failed! Consider using Option --maintainer."
+		else
+			echo $DEBMAINTAINER
+		fi
+	else
+		echo "Using maintainer: $DEBMAINTAINER"
+	fi
+}
+
+install_docfiles() {
+	for i in ${PACKAGEDOCFILES}; do
+		if [ -f ${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}-${VERSION}/${PHP_PKG_NAME}-${VERSION}/$i ] ; then
+#			chmod 644 ${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}-${VERSION}/$i
+			echo ${PHP_PKG_NAME}-${VERSION}/$i >> ${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}-${VERSION}/debian/docs
+		fi
+	done
+}
+
+install_expfiles() {
+	for i in ${PACKAGEEXPFILES}; do
+		if [ -d ${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}-${VERSION}/${PHP_PKG_NAME}-${VERSION}/$i ] ; then
+			echo "${PHP_PKG_NAME}-${VERSION}/$i/*" >> ${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}-${VERSION}/debian/examples
+		fi
+	done
+}
+
+eval_package() {
+	VERSION=$(${PHPPKGINFO} . version)
+	LICENSE=$(${PHPPKGINFO} . license)
+	UPSTREAM=$(${PHPPKGINFO} . maintainers)
+	RELEASEDATE=$(${PHPPKGINFO} . date)
+	RELEASEYEAR=$(${PHPPKGINFO} . date|cut -b1-4)
+
+#	PACKAGEDOCFILES=$(${XMLSTARLET} sel ${XMLNSREPLACEOPTION} ${XMLNSREPLACEMENT} -t -m "/${XMLNSPREFIX}package/${XMLNSPREFIX}contents/*/${XMLNSPREFIX}file[@role='doc']" -v "@name" -o " " package.xml | sed -e 's# examples/[^ ]*##g' -e 's#^examples/[^ ]*##g')
+#	PACKAGETESTFILES=$(${XMLSTARLET} sel ${XMLNSREPLACEOPTION} ${XMLNSREPLACEMENT} -t -m "/${XMLNSPREFIX}package/${XMLNSPREFIX}contents/*/${XMLNSPREFIX}file[@role='test']" -v "@name" -o " " package.xml | sed -e 's# examples/[^ ]*##g' -e 's#^examples/[^ ]*##g')
+	LOWLICENSE=$(echo $LICENSE | awk '{print tolower($0)}' | sed 's/ /-/g')
+	if [ -f "${PREFIX}/share/dh-make-php/licenses/${LOWLICENSE}" ]; then
+		LICENSEFILE=${PREFIX}/share/dh-make-php/licenses/${LOWLICENSE}
+	fi
+	PHP_PKG_NAME=$(${PHPPKGINFO} . package)
+	PHP_PKG_LOWNAME=$(echo $PHP_PKG_NAME | awk '{print tolower($0)}' | sed 's/_/-/g')
+	SUMMARY=$(${PHPPKGINFO} . summary)
+}
+
+# vim: syntax=sh

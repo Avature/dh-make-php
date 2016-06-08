@@ -1,0 +1,19 @@
+This package was debianized by ##maintainer## using dh-make-pear
+on ##date##.
+
+It was downloaded from http://pear.php.net/package/##pearpkgname##
+
+Upstream Author(s):
+
+    ##upstream##
+
+Copyright:
+
+    Copyright (C) ##releaseyear## ##upstream##
+
+License:
+
+    ##license##
+
+The Debian packaging is copyright 2009, ##maintainer## and
+is licensed under the GPL, see `/usr/share/common-licenses/GPL'.

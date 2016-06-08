@@ -1,0 +1,42 @@
+What is dh-make-[pear|pecl]?
+----------------------------
+
+If you know dh-make-perl you already know what dh-make-[pear|pecl] does.
+Both programs create debian source packages from either an extension
+from PECL or PEAR.
+PECL and PEAR are repositories of extensions of the PHP Hypertext Processor.
+
+dh-make-pecl currently requires a C extension downloaded from PECL.
+There is currently no way to let dh-make-pecl download the extension
+by itself. The program creates a directory
+php-<extension-name>-<extension-version> containing all files
+for the debian source package and the extensions files itself. Usually
+it should be enough to create the debian binary package by
+running dpkg-buildpackage in the created directory.
+
+Building the pecl extension requires a debhelper called dh_pecl which
+is also part of this distribution.
+
+dh-make-pear does the same as dh-make-pecl for modules from PEAR.
+
+This version of dh-make-php has several features disabled because they
+are either not mature enough or need more discussion before making it
+into a new version. As there are:
+
+  - the source packages ships a debhelper script dh_pecl. It should
+    rather be part of the debhelper package. dh_pecl inserts appropriate
+    code into postinst and prerm of the pecl package to register
+    the new extension in the various php.ini files. The job of dh_pecl
+    is currently done by supplying templates already containing the code.
+  - apache isn't restarted after modifying /etc/php4/apache2/php.ini.
+    The regular php4 extension don't do that either.
+  - creating a changelog from the extension's package.xml file (this is
+    currently supported by pear.mk, but not yet by pecl)
+
+Author: Uwe Steinmann <steinm@debian.org>
+Contributions:
+  Matthew Palmer <mpalmer@debian.org> (dh_pecl and helpers)
+  Charles Fry <debian@frogcircus.org> (allow to use unmodified .orig.tar.gz,
+    many valueable hints on how to improve dh-make-php)
+  Matt Barry «muramas@cyberdiscordia.org> (patch to create php4 and php5
+    binary package from the same source.)

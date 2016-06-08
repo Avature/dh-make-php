@@ -1,0 +1,13 @@
+if [ "$1" = "remove" ]; then
+	for SAPI in apache2 apache cgi cli; do
+		if [ -f /etc/php4/$SAPI/php.ini ]; then
+			grep -v "^[[:space:]]*extension[[:space:]]*=[[:space:]]*#PECLMOD#" \
+				< /etc/php4/$SAPI/php.ini \
+				> /etc/php4/$SAPI/php.ini.#PECLMOD#remove
+			chmod --reference=/etc/php4/$SAPI/php.ini /etc/php4/$SAPI/php.ini.#PECLMOD#remove
+			mv /etc/php4/$SAPI/php.ini.#PECLMOD#remove /etc/php4/$SAPI/php.ini
+			rm /etc/php4/$SAPI/php.ini.#PECLMOD#remove
+		fi
+	done
+fi
+

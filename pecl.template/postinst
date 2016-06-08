@@ -1,0 +1,58 @@
+#!/bin/sh -e
+
+PECL_NAME=##peclpackagename##
+PHP_VERSION=##phpversion##
+
+# Source debconf library.
+. /usr/share/debconf/confmodule
+
+if [ "$DPKG_DEBUG" = "developer" ]; then
+  set -x
+fi
+
+if [ "$1" != "configure" ]; then
+  exit 0
+fi
+
+##DEBHELPER##
+
+for SAPI in apache2 apache cgi cli; do
+  if [ -f /etc/php${PHP_VERSION}/$SAPI/php.ini ]; then
+    db_get php${PHP_VERSION}/extension_${PECL_NAME}_$SAPI
+    if [ "$RET" = "true" ] \
+       && ! grep -q "^[[:space:]]*extension[[:space:]]*=[[:space:]]*${PECL_NAME}\.so" /etc/php${PHP_VERSION}/$SAPI/php.ini
+    then
+      echo "extension=${PECL_NAME}.so" >> /etc/php${PHP_VERSION}/$SAPI/php.ini
+    fi
+  fi
+done
+
+exit 0
+
+# Restart apache(s) so settings get refreshed
+if [ -d /etc/php${PHP_VERSION}/apache2 ]; then
+	for srv in apache2 ; do
+		if [ -x "/etc/init.d/$srv" ]; then
+			if [ -x /usr/sbin/invoke-rc.d ]; then
+				/usr/sbin/invoke-rc.d $srv force-reload
+			else
+				/etc/init.d/$srv force-reload
+			fi
+		fi
+	done
+fi
+
+if [ -d /etc/php${PHP_VERSION}/apache ]; then
+	for srv in apache apache-ssl apache-perl ; do
+		if [ -x "/etc/init.d/$srv" ]; then
+			if [ -x /usr/sbin/invoke-rc.d ]; then
+				/usr/sbin/invoke-rc.d $srv force-reload
+			else
+				/etc/init.d/$srv force-reload
+			fi
+		fi
+	done
+fi
+
+exit 0
+

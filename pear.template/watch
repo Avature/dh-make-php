@@ -1,0 +1,2 @@
+version=3
+http://pear.php.net/package/##pearpkgname##/download http://download.pear.php.net/package/##pearpkgname##-([\d.]+)\.tgz

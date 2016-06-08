@@ -1,0 +1,63 @@
+#!/bin/sh -e
+
+PECL_NAME=##peclpackagename##
+PHP_VERSION=##phpversion##
+
+# Source debconf library.
+. /usr/share/debconf/confmodule
+
+if [ "$DPKG_DEBUG" = "developer" ]; then
+  set -x
+fi
+
+if [ "$1" != "remove" ] && [ "$1" != "purge" ]; then
+  exit 0
+fi
+
+##DEBHELPER##
+
+EXTENSIONRE="^[[:space:]]*extension[[:space:]]*=[[:space:]]*${PECL_NAME}\.so"
+
+for SAPI in apache apache2 cgi cli
+do
+  # Use the same question for all extensions, because it's only
+  # used once per package: right here.
+  if [ -f "/etc/php${PHP_VERSION}/$SAPI/php.ini" ] \
+     && grep -q "$EXTENSIONRE" /etc/php${PHP_VERSION}/$SAPI/php.ini
+  then
+    db_set php${PHP_VERSION}/remove_extension true
+    db_title "PHP"
+    db_subst php${PHP_VERSION}/remove_extension extname ${PECL_NAME}
+    db_subst php${PHP_VERSION}/remove_extension sapiconfig $SAPI
+    db_input low php${PHP_VERSION}/remove_extension || true
+    db_go
+
+    db_get php${PHP_VERSION}/remove_extension
+    if [ "$RET" = "true" ]; then
+      grep -v "$EXTENSIONRE" < /etc/php${PHP_VERSION}/$SAPI/php.ini \
+        > /etc/php${PHP_VERSION}/$SAPI/php.ini.${PECL_NAME}remove
+      chmod --reference=/etc/php${PHP_VERSION}/$SAPI/php.ini \
+        /etc/php${PHP_VERSION}/$SAPI/php.ini.${PECL_NAME}remove
+      mv /etc/php${PHP_VERSION}/$SAPI/php.ini.${PECL_NAME}remove \
+        /etc/php${PHP_VERSION}/$SAPI/php.ini
+    fi
+    db_fset php${PHP_VERSION}/remove_extension seen false
+  fi
+done
+
+exit 0
+
+# Restart apache(s) so settings get refreshed
+if [ -d /etc/php${PHP_VERSION}/apache/ ] || [ -d /etc/php${PHP_VERSION}/apache2/ ]; then
+	for srv in apache2 apache apache-ssl apache-perl; do
+		if [ -x "/etc/init.d/$srv" ]; then
+			if [ -x /usr/sbin/invoke-rc.d ]; then
+				/usr/sbin/invoke-rc.d $srv force-reload
+			else
+				/etc/init.d/$srv force-reload
+			fi
+		fi
+	done
+fi
+
+exit 0

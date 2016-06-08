@@ -1,0 +1,240 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+
+<!--
+
+Process this file with an XSLT processor: `xsltproc \
+-''-nonet /usr/share/sgml/docbook/stylesheet/xsl/nwalsh/\
+manpages/docbook.xsl manpage.dbk'.  A manual page
+<package>.<section> will be generated.  You may view the
+manual page with: nroff -man <package>.<section> | less'.  A
+typical entry in a Makefile or Makefile.am is:
+
+DB2MAN=/usr/share/sgml/docbook/stylesheet/xsl/nwalsh/\
+manpages/docbook.xsl
+XP=xsltproc -''-nonet
+
+manpage.1: manpage.dbk
+        $(XP) $(DB2MAN) $<
+    
+The xsltproc binary is found in the xsltproc package.  The
+XSL files are in docbook-xsl.  Please remember that if you
+create the nroff version in one of the debian/rules file
+targets (such as build), you will need to include xsltproc
+and docbook-xsl in your Build-Depends control field.
+
+-->
+
+  <!-- Fill in your name for FIRSTNAME and SURNAME. -->
+  <!ENTITY dhfirstname "UWE">
+  <!ENTITY dhsurname   "STEINMANN">
+  <!-- SECTION should be 1-8, maybe w/ subsection other parameters are
+       allowed: see man(7), man(1). -->
+  <!ENTITY dhsection   "1">
+  <!ENTITY dhemail     "steinm@debian.org">
+  <!ENTITY dhusername  "Uwe Steinmann">
+  <!ENTITY dhtitle     "dh-make-pear User Manual">
+  <!ENTITY dhucpackage "DH-MAKE-PEAR">
+  <!ENTITY dhpackage   "dh-make-pear">
+
+  <!ENTITY debian      "<productname>Debian</productname>">
+  <!ENTITY gnu         "<acronym>GNU</acronym>">
+  <!ENTITY gpl         "&gnu; <acronym>GPL</acronym>">
+]>
+
+<refentry>
+  <refentryinfo>
+    <title>&dhtitle;</title>
+    <productname>&dhpackage;</productname>
+    <authorgroup>
+      <author>
+       <firstname>&dhfirstname;</firstname>
+        <surname>&dhsurname;</surname>
+        <contrib>Wrote this manpage for the Debian system.</contrib>
+        <address>
+          <email>&dhemail;</email>
+        </address>
+      </author>
+    </authorgroup>
+    <copyright>
+      <year>2004-2010</year>
+      <holder>&dhusername;</holder>
+    </copyright>
+    <legalnotice>
+      <para>This manual page was written for the Debian system
+        (and may be used by others).</para>
+      <para>Permission is granted to copy, distribute and/or modify this
+        document under the terms of the GNU General Public License,
+        Version 2 or (at your option) any later version published by
+        the Free Software Foundation.</para>
+      <para>On Debian systems, the complete text of the GNU General Public
+        License can be found in
+        <filename>/usr/share/common-licenses/GPL</filename>.</para>
+    </legalnotice>
+  </refentryinfo>
+  <refmeta>
+    <refentrytitle>&dhucpackage;</refentrytitle>
+    <manvolnum>&dhsection;</manvolnum>
+  </refmeta>
+  <refnamediv>
+    <refname>&dhpackage;</refname>
+
+    <refpurpose>Create debian source packages from pear modules</refpurpose>
+  </refnamediv>
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+
+      <arg><option>--help </option></arg>
+
+      <arg><option>--version </option></arg>
+
+      <arg><option>--rename </option></arg>
+
+      <arg><option>--arch <replaceable>any | all</replaceable></option></arg>
+
+      <arg><option>--state <replaceable>STATE</replaceable></option></arg>
+
+      <arg><option>--depends <replaceable>DEPENDS</replaceable></option></arg>
+
+      <arg><option>--maintainer <replaceable>MAINTAINER</replaceable></option></arg>
+
+      <arg><option>--prefix <replaceable>PREFIX</replaceable></option></arg>
+
+      <arg><option>--templatedir <replaceable>TEMPLATEDIR</replaceable></option></arg>
+      <arg>PACKAGE</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+  <refsect1>
+    <title>DESCRIPTION</title>
+
+    <para>This manual page documents briefly the
+      <command>&dhpackage;</command>
+      command.</para>
+
+    <para><command>&dhpackage;</command> creates the files required to
+      build a debian source package from a PHP extension as it is
+      distributed through PEAR.</para>
+
+    <para>The last parameter passed to <command>&dhpackage;</command> can
+      be either the .tgz archive containing the php extension or the
+      name of the extension. In the second case <command>&dhpackage;</command>
+      will first download the archive from http://pear.php.net.
+      If <command>&dhpackage;</command>
+      downloads the archive itself, it will always take the most recent
+      version.</para>
+
+    <para><command>&dhpackage;</command> will by default create a directory
+      named php-&lt;pear-package-name&gt; which will contain the debian
+      files and the unpacked files from the extension. It will also create a
+      symlink php-&lt;pear-package-name&gt;_&lt;version&gt;.orig.tar.gz
+      pointing towards the original source. After creating the files
+      you can go into then new directory and build the debian package
+      with <command>dpkg-buildpackage -rfakeroot</command>.</para>
+
+    <para><command>&dhpackage;</command> tries to extract as much information
+      about the package from the file <filename>package.xml</filename> which
+      is part of the pear extension.</para>
+
+    <para>Debian source packages created by <command>&dhpackage;</command>
+      can later easily be updated with <command>uscan</command>.</para>
+
+  </refsect1>
+  <refsect1>
+    <title>OPTIONS</title>
+
+    <para>These programs follow the usual &gnu; command line syntax,
+      with long options starting with two dashes (`-').  A summary of
+      options is included below.  For a complete description, see the
+      <application>Info</application> files.</para>
+
+    <variablelist>
+      <varlistentry>
+        <term><option>-h</option>
+          <option>--help</option>
+        </term>
+        <listitem>
+          <para>Show summary of options.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>-v</option>
+          <option>--version</option>
+        </term>
+        <listitem>
+          <para>Show version of program.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--rename</option>
+        </term>
+        <listitem>
+          <para>Do not link orig.tar.gz but move the source into .orig.tar.gz.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--arch</option>
+        </term>
+        <listitem>
+          <para>Set architecture of created debian source package to 'any'
+            or 'all'. Defaults to 'all'.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--state</option>
+        </term>
+        <listitem>
+          <para>Set preferred state for downloaded package. Defaults to
+            'stable'.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--depends</option>
+        </term>
+        <listitem>
+          <para>Adds more packages to Depends: beside php-pear.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--prefix</option>
+        </term>
+        <listitem>
+          <para>Sets prefix of debian source package name. Each name ends
+            in '&lt;pear-package-name&gt;'. Defaults to 'php-'.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--maintainer</option>
+        </term>
+        <listitem>
+          <para>Explicitly sets the maintainer. In most cases it will be
+            propperly guessed by reading some of the environment
+            variables.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--templatedir</option>
+        </term>
+        <listitem>
+          <para>Use a different directory with templates for the debian
+            files. Defaults to /usr/share/dh-make-php/pear.template.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+  <refsect1>
+    <title>ENVIRONMENT</title>
+
+    <para>DEBFULLNAME - get the real name of the maintainer</para>
+    <para>LOGNAME or USER - get the username</para>
+    <para>DEBEMAIL or EMAIL - get the email address of the user</para>
+  </refsect1>
+  <refsect1>
+    <title>SEE ALSO</title>
+
+    <para>dh-make-pecl (1).</para>
+
+  </refsect1>
+</refentry>
+

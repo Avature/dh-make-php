@@ -1,0 +1,177 @@
+#!/usr/bin/php -f
+<?php
+
+include("PEAR/PackageFile.php");
+
+function usage() {
+	echo "Usage: ".$_SERVER["argv"][0]." dir <command>\n";
+	echo "  dir          - Directory containing package.xml file\n";
+	echo "\ncommands:\n";
+	echo "  version      - Version of package\n";
+	echo "  maintainers  - Comma separated list of maintainers\n";
+	echo "  summary      - Short summary of package\n";
+	echo "  description  ¯ Long description of package\n";
+	echo "  packagerversion - Version of packager\n";
+	echo "  package      - Name of package\n";
+	echo "  release_license - License of released version\n";
+	echo "  license      - License of package\n";
+	echo "  date         - Date of release\n";
+	echo "  changelog    - Full changelog of package\n";
+	echo "  hasphpscript - Check if package contains files of type 'script'\n";
+	echo "  all          - print_r() of complete package file\n";
+}
+
+function checkForPhpScript($content) {
+	foreach($content as $name=>$item) {
+		if($name == 'dir') {
+			return checkForPhpScript($item);
+		} elseif($name == 'file') {
+			foreach($item as $file) {
+				if($file['attribs']['role'] == 'script') {
+//					echo "Found file of type ".$file['attribs']['role'].": ".$file['attribs']['name']."\n";
+					return 1;
+				}
+			}
+		}
+	}
+	return 0;
+}
+
+if($_SERVER["argc"] < 3) {
+	usage();
+	exit;
+}
+
+$config = new PEAR_Config();
+$pkg = new PEAR_PackageFile($config);
+/* newer versions of PEAR_PackageFile can take a directory as the
+ * first parameter of fromAnyFile(), but older version cannot.
+ */
+if (is_dir($_SERVER["argv"][1])) {
+	$dir_name = realpath($_SERVER["argv"][1]);
+	if (file_exists($dir_name . '/package.xml')) {
+		$packagefilename = $dir_name . '/package.xml';
+	} elseif (file_exists($dir_name .  '/package2.xml')) {
+		$packagefilename = $dir_name . '/package2.xml';
+	} else {
+		$info = PEAR::raiseError("No package definition found in '$info' directory");
+	}
+} else {
+	$packagefilename = $_SERVER["argv"][1];
+}
+$pf = $pkg->fromAnyFile($packagefilename, PEAR_VALIDATE_NORMAL);
+//echo get_class($pf);
+//print_r($pf);
+//exit;
+
+//print_r($pf->_packageInfo);
+if(get_class($pf) == "PEAR_PackageFile_v1") {
+	switch($_SERVER["argv"][2]) {
+		case "version":
+		case "summary":
+		case "description":
+		case "packagerversion":
+		case "package":
+		case "release_license":
+		case "release_date":
+			echo $pf->_packageInfo[$_SERVER["argv"][2]];
+			break;
+		case "date":
+			echo $pf->_packageInfo["release_date"];
+			break;
+		case "license":
+			echo $pf->_packageInfo["release_license"];
+			break;
+		case "maintainers":
+			$tmp = array();
+			foreach($pf->_packageInfo["maintainers"] as $maintainer)
+				$tmp[] = $maintainer["name"];
+			echo implode(", ", $tmp);
+			break;
+		case "changelog":
+			$changelog = &$pf->_packageInfo;
+			echo "Version ".$changelog["version"]." - ".$changelog["release_date"]." (".$changelog["release_state"].")\n";
+			echo "----------------------------------------\n";
+			echo "Notes:\n";
+			echo "  ".str_replace("\n", "\n  ", wordwrap(ereg_replace("[[:space:]]+", " ", $changelog["release_notes"])))."\n\n";
+			foreach($pf->_packageInfo["changelog"] as $changelog) {
+				echo "Version ".$changelog["version"]." - ".$changelog["release_date"]." (".$changelog["release_state"].")\n";
+				echo "----------------------------------------\n";
+				echo "Notes:\n";
+				echo "  ".str_replace("\n", "\n  ", wordwrap(ereg_replace("[[:space:]]+", " ", $changelog["release_notes"])))."\n\n";
+			}
+			break;
+		case "hasphpscript":
+			/* not yet implemented for verion 1.0 package files */
+			echo "0";
+			break;
+		case "all":
+			print_r($pf->_packageInfo);
+			break;
+		default:
+	}
+} elseif(get_class($pf) == "PEAR_PackageFile_v2") {
+	switch($_SERVER["argv"][2]) {
+		case "version":
+			echo $pf->_packageInfo[$_SERVER["argv"][2]]["release"];
+			break;
+		case "packagerversion":
+			echo $pf->_packageInfo["attribs"][$_SERVER["argv"][2]];
+			break;
+		case "summary":
+		case "description":
+		case "release_license":
+		case "date":
+			echo $pf->_packageInfo[$_SERVER["argv"][2]];
+			break;
+		case "package":
+			echo $pf->_packageInfo["name"];
+			break;
+		case "license":
+			echo $pf->_packageInfo["license"];
+			break;
+		case "maintainers":
+			$tmp = array();
+			if(isset($pf->_packageInfo["lead"])) {
+				if(isset($pf->_packageInfo["lead"]["name"]))
+					$tmp[] = $pf->_packageInfo["lead"]["name"];
+				else
+					foreach($pf->_packageInfo["lead"] as $maintainer)
+						$tmp[] = $maintainer["name"];
+			}
+			if(isset($pf->_packageInfo["developer"])) {
+				if(isset($pf->_packageInfo["developer"]["name"]))
+					$tmp[] = $pf->_packageInfo["developer"]["name"];
+				else
+					foreach($pf->_packageInfo["developer"] as $maintainer)
+						$tmp[] = $maintainer["name"];
+			}
+			echo implode(", ", $tmp);
+			break;
+		case "changelog":
+			$changelog = &$pf->_packageInfo;
+			echo "Version ".$changelog["version"]["release"]." - ".$changelog["date"]." (".$changelog["stability"]["release"].")\n";
+			echo "----------------------------------------\n";
+			echo "Notes:\n";
+			echo "  ".str_replace("\n", "\n  ", wordwrap(ereg_replace("[[:space:]]+", " ", $changelog["notes"])))."\n\n";
+			$tmparr = array_reverse($pf->_packageInfo["changelog"]["release"]);
+			foreach($tmparr as $changelog) {
+				echo "Version ".$changelog["version"]["release"]." - ".$changelog["date"]." (".$changelog["stability"]["release"].")\n";
+				echo "----------------------------------------\n";
+				echo "Notes:\n";
+				echo "  ".str_replace("\n", "\n  ", wordwrap(ereg_replace("[[:space:]]+", " ", $changelog["notes"])))."\n\n";
+			}
+			break;
+		case "hasphpscript":
+			$content = $pf->_packageInfo['contents'];
+			$hasscript = checkForPhpScript($content);
+			echo $hasscript;
+			break;
+		case "all":
+			print_r($pf->_packageInfo);
+			break;
+		default:
+	}
+}
+
+?>

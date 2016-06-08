@@ -1,0 +1,127 @@
+#!/usr/bin/perl -w
+
+=head1 NAME
+
+dh_pecl - calculate zendapi dependencies and adds postinst and prerm scripts
+
+=cut
+
+use strict;
+use File::Find;
+use Debian::Debhelper::Dh_Lib;
+
+=head1 SYNOPSIS
+
+B<dh_pecl> [S<I<debhelper options>>] [B<-n>] [I<modules ...>]
+
+=head1 DESCRIPTION
+
+dh_pecl is a debhelper program that is responsible for generating
+${misc:Depends} substitutions and adding them to substvars files. It
+will also add a postinst and a prerm script if required.
+
+The program will look at any PECL modules in your package, and
+will use this information to generate a dependency on a specific version of
+the Zend API, and install the module into the right place.
+The dependency will be substituted into your
+package's control file wherever you place the token "${misc:Depends}".
+
+If you use this program, your package should build-depend on php4-dev and
+php5-dev, as well as dh-make-php (the package containing this script).
+
+=head1 OPTIONS
+
+=over 4
+
+=item I<modules ...>
+
+A list of modules, relative to the build root directory, that you want to
+install into the PHP modules directory.
+
+=item B<-n>, B<--noscripts>
+
+Do not modify postinst/postrm scripts.
+
+=back
+
+=head1 CONFORMS TO
+
+Debian policy, version 3.6.1
+
+=cut
+
+# Dh_Lib initialiser
+init();
+
+# The current Zend API version
+my $zendapiver = `grep \'#define ZEND_MODULE_API_NO \' /usr/include/php4/Zend/zend_modules.h | sed 's/#define ZEND_MODULE_API_NO //'`;
+chomp($zendapiver);
+my $phpapiver = `grep \'#define PHP_API_VERSION \' /usr/include/php4/main/php.h | sed 's/#define PHP_API_VERSION //'`;
+chomp($phpapiver);
+
+if ($zendapiver eq "")
+{
+	die "Could not determine Zend API version.  Is php4-dev installed?\n";
+}
+
+if ($phpapiver eq "")
+{
+	die "Could not determine PHP API version.  Is php4-dev installed?\n";
+}
+
+# Therefore...
+chomp(my $moduledir = `/usr/bin/php-config --extension-dir`);
+my $apivirtpkgs = "phpapi-$phpapiver | zendapi-$zendapiver";
+
+foreach my $package (@{$dh{DOPACKAGES}})
+{
+	my $tmp = tmpdir($package);
+	my $mfile = pkgfile($package, "pecl");
+
+	my @modules = [];
+	if ($mfile)
+	{
+		@modules = filearray($mfile, ".");
+	}
+	else
+	{
+		@modules = @ARGV;
+	}
+	
+	if (@modules)
+	{
+		# Create me a module directory
+		doit("install", "-g", 0, "-o", 0, "-d", "$tmp/$moduledir");
+
+		foreach my $mod (@modules)
+		{
+			doit("install", "-g", 0, "-o", 0, $mod, "$tmp/$moduledir");
+			chmod 0644, "$tmp/$moduledir/$mod";
+			my $modbase = `basename $mod`;
+			chomp($modbase);
+			
+			# debhelper script snippets, once per module because we have
+			# to add and/or remove each module separately
+			my $subst = "s/#PECLMOD#/$modbase/";
+			autoscript($package, "postinst", "postinst-pecl", $subst);
+			autoscript($package, "prerm", "prerm-pecl", $subst);
+		}
+	}
+
+	# Add the Zend API dependency
+	addsubstvar($package, "misc:Depends", $apivirtpkgs);
+}
+
+=head1 SEE ALSO
+
+L<debhelper(7)>
+
+This program is a part of debhelper.
+
+=head1 AUTHOR
+
+Matthew Palmer <mpalmer@debian.org>
+
+Based on dh_python by Josselin Mouette <joss@debian.org>
+
+=cut

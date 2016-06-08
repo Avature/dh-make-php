@@ -1,0 +1,310 @@
+dh-make-php (0.4.0) unstable; urgency=low
+
+  * add support for new /etc/php5/mods-available structure (Thanks to Casper Langemeijer) (Closes: #736945)
+  * fix bashism (Closes: #690643)
+  * use pear config for getting directories in pear.mk (Closes: #626064)
+  * issued warnings when downloading a package has no negative effect
+    on building the package anymore (Closes: #624473)
+
+ -- Uwe Steinmann <steinm@debian.org>  Sat, 01 Feb 2014 12:25:50 +0100
+
+dh-make-php (0.3.0) unstable; urgency=low
+
+  * option --only is deprecated, use --phpversion
+  * dh-make-pecl builds extenѕion for php5 only by default
+  * updated template files to standards version 3.9.1 (Closes: #572334)
+  * remove md5sums from package.xml before building to allow proper
+    patching (Closes: #525656)
+  * check for php scripts in the package that require php-cli and if so,
+    add a dependency on it (Closes: #464934)
+
+ -- Uwe Steinmann <steinm@debian.org>  Tue, 31 Aug 2010 10:32:35 +0200
+
+dh-make-php (0.2.16) unstable; urgency=low
+
+  * --arch option is working again (Closes: #569044)
+  * added 'php-pear, ${misc:Depends}' to Depends in created pear pkg
+    (Closes: #553454, #553448)
+  * added --rename option (Closes: #553447)
+  * output error message if downloading pear package fails (Closes: #569054)
+  * add option --state (Closes: #553446)
+  * fixed lots of warnings when creating manual pages
+  * removed Charles Fry from Uploaders (Closes: #569473)
+
+ -- Uwe Steinmann <steinm@debian.org>  Thu, 11 Feb 2010 18:56:32 +0100
+
+dh-make-php (0.2.15) unstable; urgency=low
+
+  * pass --offline option to 'pear install' in pear.mk because the buildd
+    may not fetch online resources (Closes: #544411)
+
+ -- Uwe Steinmann <steinm@debian.org>  Fri, 4 Sep 2009 07:22:58 +0200
+
+dh-make-php (0.2.14) unstable; urgency=low
+
+  * use fmt instead of fold in dh-make-pecl and dh-make-pear (Closes: #516185)
+  * updated generated control and compat files to standards version
+    3.8.1 and compat level 7 (Closes: #520030)
+  * added missing colon after 'Closes' in generated changelog file
+  * nicer formating of generated copyright file, added copyright for
+    Debian packaging
+
+ -- Uwe Steinmann <steinm@debian.org>  Thu, 19 Mar 2009 21:55:04 +0100
+
+dh-make-php (0.2.13) unstable; urgency=low
+
+  * dh-make-pecl can extract the package from downloaded packages, even
+    if the download causes a warning (Closes: #512741)
+
+ -- Uwe Steinmann <steinm@debian.org>  Fri, 23 Jan 2009 21:55:04 +0100
+
+dh-make-php (0.2.12) unstable; urgency=low
+
+  * phppkginfo can now handle multiple developers in package.xml (version 2)
+
+ -- Uwe Steinmann <steinm@debian.org>  Fri, 30 May 2008 21:33:00 +0200
+
+dh-make-php (0.2.11) unstable; urgency=low
+
+  * phppkginfo checks for package.xml or package2.xml in the given
+    directory instead of expecting PEAR_Package::fromAnyFile() to do
+    so (Closes: #471279).
+
+ -- Uwe Steinmann <steinm@debian.org>  Mon, 20 May 2008 13:33:00 +0200
+
+dh-make-php (0.2.10) unstable; urgency=low
+
+  * package name prefix can be the empty string (Closes: #464486)
+  * added closing of ITP bug changelog template
+  * fixed copyright line in copyright template file
+  * updated licenses (Closes: #467467)
+
+ -- Uwe Steinmann <steinm@debian.org>  Tue, 04 Mar 2008 08:27:10 +0100
+
+dh-make-php (0.2.9) unstable; urgency=low
+
+  * Read single and multiple leads from package.xml (version 2)
+  * Did various test to reproduce bug #433456, which was imposible.
+    So let's just close it (Closes: #433456)
+  * fixed lintian warnings
+
+ -- Uwe Steinmann <steinm@debian.org>  Tue, 04 Mar 2008 00:22:30 +0100
+
+dh-make-php (0.2.8) unstable; urgency=low
+
+  * Do not install pear packages by postinst, prerm scripts anymore, but
+    keep the .reg file instead and install it into /usr/share/php/.registry/.
+    (Closes: #443523)
+
+ -- Uwe Steinmann <steinm@debian.org>  Wed, 26 Sep 2007 11:42:25 +0200
+
+dh-make-php (0.2.7) unstable; urgency=low
+
+  * Replaced PHP license 3.0 with 3.01 (Closes: #442309)
+  * Add postinst, prerm scripts.  Keep package.xml in docs for use.
+    Update watch template (patch provided by Mark A. Hershberger
+    <mah@everybody.org>) (Closes: #442035)
+  * updated url in watch file (another fix by Mark A. Hershberger)
+
+ -- Uwe Steinmann <steinm@debian.org>  Mon, 17 Sep 2007 11:12:42 +0200
+
+dh-make-php (0.2.6) unstable; urgency=low
+
+  * Use -P instead of -R in pear.mk when calling 'pear install'
+    (Closes: #439613)
+  * Make clean target in pear.mk fail safe (Closes: #440073)
+
+ -- Uwe Steinmann <steinm@debian.org>  Wed, 29 Aug 2007 16:06:42 +0200
+
+dh-make-php (0.2.5) unstable; urgency=low
+
+  * Removed tmp directory which was left over by pear install and
+    became part of the binary package
+  * fixed link to orig src which uses a '-' instead of a '_' to
+    separate the version number
+  * Call /usr/bin/pecl instead of pecl in dh-make-pecl 
+  * No need to set ZENDAPI by getzendapi(). This also removes a
+    dependency on php4. (Closes: #434133)
+
+ -- Uwe Steinmann <steinm@debian.org>  Sat, 18 Aug 2007 23:06:42 +0200
+
+dh-make-php (0.2.4) unstable; urgency=low
+
+  * Do not call command for creation of changelog from package.xml
+    in a sub shell (Closes: #437395)
+
+ -- Uwe Steinmann <steinm@debian.org>  Fri, 17 Aug 2007 22:16:23 +0200
+
+dh-make-php (0.2.3) unstable; urgency=low
+
+  * Do not depend on php4-pear anymore, because it is a transitional
+    package anyway and php4 will disappear soon. (Closes: #424787)
+  * extract information from package.xml with an included php
+    script instead of using xsltproc and xmlstarlet. This is
+    much more reliable because support for new versions of the
+    package file is much easier to add. (Closes: #432880)
+  * Drop dependency on xsltproc and xmlstarlet
+  * Full support for version 2.0 of package.xml (Closes: #364873)
+
+ -- Uwe Steinmann <steinm@debian.org>  Thu, 19 Jul 2007 23:37:28 +0200
+
+dh-make-php (0.2.2) unstable; urgency=low
+
+  * fixed debian/rules for pecl extensions
+    php4apiver wasn't set propperly
+
+ -- Uwe Steinmann <steinm@debian.org>  Wed, 28 Mar 2007 12:36:26 +0200
+
+dh-make-php (0.2.1) unstable; urgency=low
+
+  * dh-make-pecl now creates extensions with its ini file in conf.d.
+    It also fixes a very nasty bug which leads to an installation
+    of the php4 module into php5. The pecl module now depends on
+    the php api version.
+
+ -- Uwe Steinmann <steinm@debian.org>  Wed, 28 Mar 2007 11:29:34 +0200
+
+dh-make-php (0.2.0) unstable; urgency=low
+
+  * lowered dependency on xmlstarlet from 1.0.1 to 1.0.0 and check
+    for /usr/bin/xmlstarlet or /usr/bin/xml. This should ease backporting
+    it to sarge.
+  * no more dependencies on php[4|5] if --only option was used
+    (Closes: #365846)
+  * support for new package.xml version 2.0
+  * debian/rules for pecl packages now follows the release requirements
+    (added build target)
+  * move to compat level 5
+
+ -- Uwe Steinmann <steinm@debian.org>  Fri, 02 Nov 2006 11:55:59 +0100
+
+dh-make-php (0.1.3) unstable; urgency=low
+
+  * pear.template/control should use Build-Depend instead of
+    Build-Depend-Indep
+
+ -- Charles Fry <debian@frogcircus.org>  Wed, 14 Jun 2006 10:01:02 -0400
+
+dh-make-php (0.1.2) unstable; urgency=low
+
+  * use versioned dependency in pear.template/control to ensure presence of
+    pear.mk
+
+ -- Charles Fry <debian@frogcircus.org>  Tue,  6 Jun 2006 08:14:40 -0400
+
+dh-make-php (0.1.1) unstable; urgency=low
+
+  * call debhelper.mk from debian/rules not pear.mk
+
+ -- Charles Fry <debian@frogcircus.org>  Mon,  5 Jun 2006 08:24:14 -0400
+
+dh-make-php (0.1.0) unstable; urgency=low
+
+  * made it native debian package
+  * Use CDBS pear.mk (Closes: #332632)
+  * Automatically generate changelogs in dh-make-pear
+  * Minor cleanup of packaging files
+  * install templates file into php5 binary package (Closes: #356257)
+  * use pecl in dh-make-pecl to download pecl packages  (Closes: #364874)
+  * document --only option of dh-make-pecl in man page (Closes: #365665)
+  * do not use option --phpapi of php-config4 anymore. Use --extension-dir
+    and some post processing instead, because the version of php-config4
+    in sarge does not have that option. (Closes: #365667)
+
+ -- Uwe Steinmann <steinm@debian.org>  Tue, 30 May 2006 10:51:52 +0100
+
+dh-make-php (0.0.13-1) unstable; urgency=low
+
+  * New upstream release
+  * Recommends php-pear (Closes: #345265)
+
+ -- Uwe Steinmann <steinm@debian.org>  Mon, 13 Feb 2006 11:35:33 +0100
+
+dh-make-php (0.0.12-1) unstable; urgency=low
+
+  * New upstream release
+  * replaced backticks by $(shell ) in template rules files (Closes: #330718)
+
+ -- Uwe Steinmann <steinm@debian.org>  Fri, 25 Nov 2005 11:04:57 +0100
+
+dh-make-php (0.0.11-1) unstable; urgency=low
+
+  * New upstream release
+  * move documentation from /usr/share/php/docs to
+    /usr/share/doc in pear packages (Closes: #329386)
+  * fold description of generated debian package to 70 chars (Closes: #329807)
+  * use more consitent variable names (Closes: #329809)
+
+ -- Uwe Steinmann <steinm@debian.org>  Tue, 04 Oct 2005 14:48:57 +0200
+
+dh-make-php (0.0.10-1) unstable; urgency=low
+
+  * New upstream release
+  * Consider most recent entry of changelog in package.xml (Closes: #327679)
+  * Create binary packages for php4/5 from one source (Closes: #325051)
+
+ -- Uwe Steinmann <steinm@debian.org>  Tue, 13 Sep 2005 08:31:32 +0200
+
+dh-make-php (0.0.9-1) unstable; urgency=low
+
+  * New upstream release
+    - if the name of the package is passed to dh-make-pecl|pear
+      it will download it from pecl/pear (Closes: #321317)
+
+ -- Uwe Steinmann <steinm@debian.org>  Fri, 05 Aug 2005 13:14:00 +0200
+
+dh-make-php (0.0.8-1) unstable; urgency=low
+
+  * New upstream release
+    - do not move but symlink original archive (Closes: #319493)
+    - added more elaborated license text to template/copyright (Closes: #319498)
+    - removed empty line at end of pear.template/control (Closes: #319494)
+  * Suppress some warnings of linitan
+  * Added xsltproc to Build-Depends-Indep (Closes: #319566)
+
+ -- Uwe Steinmann <steinm@debian.org>  Fri, 22 Jul 2005 22:28:30 +0200
+
+dh-make-php (0.0.7-1) unstable; urgency=low
+
+  * orig.tar.gz can be used unmodified, uupdate now works
+
+ -- Uwe Steinmann <steinm@debian.org>  Fri, 15 Jul 2005 11:11:07 +0200
+
+dh-make-php (0.0.6-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Uwe Steinmann <steinm@debian.org>  Thu, 24 Jun 2005 22:33:25 +0200
+
+dh-make-php (0.0.5-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Uwe Steinmann <steinm@debian.org>  Thu, 16 Jun 2005 09:15:05 +0200
+
+dh-make-php (0.0.4-1) unstable; urgency=low
+
+  * New upstream release.
+  * No need for dependency from php4-pear
+
+ -- Uwe Steinmann <steinm@debian.org>  Thu, 18 Mar 2004 08:23:45 +0200
+
+dh-make-php (0.0.3-1) unstable; urgency=low
+
+  * New upstream release.
+  * No more depend on sgrep but xsltproc
+
+ -- Uwe Steinmann <steinm@debian.org>  Fri, 12 Mar 2004 10:51:32 +0200
+
+dh-make-php (0.0.2-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Uwe Steinmann <steinm@debian.org>  Mon, 01 Mar 2004 10:51:32 +0200
+
+dh-make-php (0.0.1-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Uwe Steinmann <steinm@debian.org>  Fri, 27 Feb 2004 13:41:12 +0200
+

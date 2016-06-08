@@ -1,0 +1,318 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+
+<!--
+
+Process this file with an XSLT processor: `xsltproc \
+-''-nonet /usr/share/sgml/docbook/stylesheet/xsl/nwalsh/\
+manpages/docbook.xsl manpage.dbk'.  A manual page
+<package>.<section> will be generated.  You may view the
+manual page with: nroff -man <package>.<section> | less'.  A
+typical entry in a Makefile or Makefile.am is:
+
+DB2MAN=/usr/share/sgml/docbook/stylesheet/xsl/nwalsh/\
+manpages/docbook.xsl
+XP=xsltproc -''-nonet
+
+manpage.1: manpage.dbk
+        $(XP) $(DB2MAN) $<
+    
+The xsltproc binary is found in the xsltproc package.  The
+XSL files are in docbook-xsl.  Please remember that if you
+create the nroff version in one of the debian/rules file
+targets (such as build), you will need to include xsltproc
+and docbook-xsl in your Build-Depends control field.
+
+-->
+
+  <!-- Fill in your name for FIRSTNAME and SURNAME. -->
+  <!ENTITY dhfirstname "UWE">
+  <!ENTITY dhsurname   "STEINMANN">
+  <!-- SECTION should be 1-8, maybe w/ subsection other parameters are
+       allowed: see man(7), man(1). -->
+  <!ENTITY dhsection   "1">
+  <!ENTITY dhemail     "steinm@debian.org">
+  <!ENTITY dhusername  "Uwe Steinmann">
+  <!ENTITY dhtitle     "dh-make-pecl User Manual">
+  <!ENTITY dhucpackage "DH-MAKE-PECL">
+  <!ENTITY dhpackage   "dh-make-pecl">
+
+  <!ENTITY debian      "<productname>Debian</productname>">
+  <!ENTITY gnu         "<acronym>GNU</acronym>">
+  <!ENTITY gpl         "&gnu; <acronym>GPL</acronym>">
+]>
+
+<refentry>
+  <refentryinfo>
+    <title>&dhtitle;</title>
+    <productname>&dhpackage;</productname>
+    <authorgroup>
+      <author>
+       <firstname>&dhfirstname;</firstname>
+        <surname>&dhsurname;</surname>
+        <contrib>Wrote this manpage for the Debian system.</contrib>
+        <address>
+          <email>&dhemail;</email>
+        </address>
+      </author>
+    </authorgroup>
+    <copyright>
+      <year>2004-2010</year>
+      <holder>&dhusername;</holder>
+    </copyright>
+    <legalnotice>
+      <para>This manual page was written for the Debian system
+        (and may be used by others).</para>
+      <para>Permission is granted to copy, distribute and/or modify this
+        document under the terms of the GNU General Public License,
+        Version 2 or (at your option) any later version published by
+        the Free Software Foundation.</para>
+      <para>On Debian systems, the complete text of the GNU General Public
+        License can be found in
+        <filename>/usr/share/common-licenses/GPL</filename>.</para>
+    </legalnotice>
+  </refentryinfo>
+  <refmeta>
+    <refentrytitle>&dhucpackage;</refentrytitle>
+    <manvolnum>&dhsection;</manvolnum>
+  </refmeta>
+  <refnamediv>
+    <refname>&dhpackage;</refname>
+
+    <refpurpose>Create debian source packages from pecl extensions</refpurpose>
+  </refnamediv>
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+
+      <arg><option>--help </option></arg>
+
+      <arg><option>--version </option></arg>
+
+      <arg><option>--arch <replaceable>any | all</replaceable></option></arg>
+
+      <arg><option>--depends <replaceable>DEPENDS</replaceable></option></arg>
+      <arg><option>--build-depends <replaceable>DEPENDS</replaceable></option></arg>
+
+
+      <arg><option>--maintainer <replaceable>MAINTAINER</replaceable></option></arg>
+
+      <arg><option>--prefix <replaceable>PREFIX</replaceable></option></arg>
+
+      <arg><option>--package-name <replaceable>NAME</replaceable></option></arg>
+
+      <arg><option>--templatedir <replaceable>TEMPLATEDIR</replaceable></option></arg>
+      <arg><option>--only <replaceable>4|5</replaceable></option></arg>
+      <arg><option>--phpversion <replaceable>4 5</replaceable></option></arg>
+      <arg><option>--dont-use-confd</option></arg>
+      <arg><option>--php55-conf</option></arg>
+      <arg><option>--no-php55-conf</option></arg>
+      <arg>PACKAGE</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+  <refsect1>
+    <title>DESCRIPTION</title>
+
+    <para>This manual page documents briefly the
+      <command>&dhpackage;</command>
+      command.</para>
+
+    <para><command>&dhpackage;</command> creates the files required to
+      build a debian source package from a PHP extension as it is
+      distributed through PECL.</para>
+
+    <para>The last parameter passed to <command>&dhpackage;</command> can
+      be either the .tgz archive containing the php extension or the
+      name of the extension. In the second case <command>&dhpackage;</command>
+      will first download the archive from http://pecl.php.net.
+      If <command>&dhpackage;</command>
+      downloads the archive itself, it will always take the most recent
+      version.</para>
+
+    <para><command>&dhpackage;</command> will by default create a directory
+      named php-&lt;pecl-package-name&gt;-&lt;pecl-package-version&gt; which will contain the debian
+      files and the unpacked files from the extension. It will also create a
+      symlink php-&lt;pecl-package-name&gt;_&lt;version&gt;.orig.tar.gz
+      pointing towards the original source. After creating the files
+      you can go into then new directory and build the debian package
+      with <command>dpkg-buildpackage -rfakeroot</command>.  This will (for
+      version 0.2.x)
+   	  create php4-&lt;pecl-package-name&gt; and php5-&lt;pecl-package-name&gt;
+	     binary packages. Since version 0.3.x only the binary package for php5 will
+      be build anymore.</para>
+
+    <para><command>&dhpackage;</command> tries to extract as much information
+      about the package from the file <filename>package.xml</filename> which
+      is part of the pecl extension. Though, there is some information like
+      depends on other debian packages, which must be given by options, e.g.
+      <option>--depends</option> or <option>--build-depends</option>.</para>
+
+    <para>Debian source packages created by <command>&dhpackage;</command>
+      can later easily be updated with <command>uscan</command>.</para>
+
+  </refsect1>
+  <refsect1>
+    <title>OPTIONS</title>
+
+    <para>These programs follow the usual &gnu; command line syntax,
+      with long options starting with two dashes (`-').  A summary of
+      options is included below.  For a complete description, see the
+      <application>Info</application> files.</para>
+
+    <variablelist>
+      <varlistentry>
+        <term><option>-h</option>
+          <option>--help</option>
+        </term>
+        <listitem>
+          <para>Show summary of options.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>-v</option>
+          <option>--version</option>
+        </term>
+        <listitem>
+          <para>Show version of program.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--arch</option>
+        </term>
+        <listitem>
+          <para>Set architecture of created debian source package to 'any'
+            or 'all'. Defaults to 'any'.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--depends</option>
+        </term>
+        <listitem>
+          <para>Adds more packages to Depends: beside php4|php5.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--build-depends</option>
+        </term>
+        <listitem>
+          <para>Adds more packages to Build-Depends: beside php4-dev,
+          php5-dev, debhelper and dh-make-php.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--prefix</option>
+        </term>
+        <listitem>
+          <para>Sets prefix of debian source package name. Each name ends
+            in '&lt;pecl-package-name&gt;'. Defaults to 'php'.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--maintainer</option>
+        </term>
+        <listitem>
+          <para>Explicitly sets the maintainer. In most cases it will be
+            propperly guessed by reading some of the environment
+            variables.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--package-name</option>
+        </term>
+        <listitem>
+          <para>Overwrite package name in package.xml. This name will be
+            prefixed with `php-'. Do not use this function unless you know
+            what you are doing.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--templatedir</option>
+        </term>
+        <listitem>
+          <para>Use a different directory with templates for the debian
+            files. Defaults to /usr/share/dh-make-php/pecl.template.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--only</option>
+        </term>
+        <listitem>
+          <para>This option is deprecated. Use --phpversion.</para>
+          <para>Set this to 4 or 5 in order to produce a debian package which
+            creates a binary package for php4 or php5 only, but not for both.
+            This is mostly
+            useful if a pecl package does not compile for all php version.
+            </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--phpversion</option>
+        </term>
+        <listitem>
+          <para>Set this to 4, 5 or both separated by a space in order to
+            produce a debian package which
+            creates a binary package for the given php major versions.
+            This is mostly
+            useful if you want to create a pecl package for php4, which is
+            not created by default anymore since
+            <command>&dhpackage;</command> 0.3.0.
+            </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--dont-use-confd</option>
+        </term>
+        <listitem>
+          <para>Some time between Sarge and Etch, the debian php packages has moved
+            its configuration into its own ini file in /etc/php[45]/conf.d and
+            no longer modify the global configuration in
+            /etc/php[45]/&lt;sapi&gt;/php.ini.
+            Since Version 0.2.1 of dh-make-php this is the default behaviour
+            when creating packages. If you prefer the old way of creating
+            php pecl packages use this option.
+            </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--php55-conf</option>
+        </term>
+        <listitem>
+          <para>PHP 5.5 has introduced a new configuration schema for pecl
+					  extensions. This is used by default, if /etc/php5/mods-available
+						is found on the system wher dh-make-pecl runs. This option is
+						provided to explicity turn on PHP 5.5 configuration even if the
+						default is off.
+            </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>--no-php55-conf</option>
+        </term>
+        <listitem>
+          <para>
+						This option is
+						provided to explicity turn off PHP 5.5 configuration even if the
+						default is on.
+            </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+  <refsect1>
+    <title>ENVIRONMENT</title>
+
+    <para><command>&dhpackage;</command> evaluates the following environment
+      variables:</para>
+      
+    <para>DEBFULLNAME - the real name of the maintainer</para>
+    <para>LOGNAME or USER - the username</para>
+    <para>DEBEMAIL or EMAIL - the email address of the user</para>
+  </refsect1>
+  <refsect1>
+    <title>SEE ALSO</title>
+
+    <para>dh-make-pear (1).</para>
+
+  </refsect1>
+</refentry>

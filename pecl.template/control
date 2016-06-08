@@ -1,0 +1,7 @@
+Source: ##packagename##
+Section: web
+Priority: optional
+Maintainer: ##maintainer##
+Build-Depends: debhelper (>= 7), po-debconf, xsltproc ##phpdevdepends## ##builddepends##
+Standards-Version: 3.9.1
+

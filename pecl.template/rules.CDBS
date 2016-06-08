@@ -1,0 +1,5 @@
+#!/usr/bin/make -f
+# template debian/rules provided by dh-make-php.
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/pecl.mk
