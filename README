@@ -1,3 +1,6 @@
+This project is a fork of the original *dh-make-php* adapted to php7.
+It might not suit your needs, as it was mostly changed until it worked.
+
 What is dh-make-[pear|pecl]?
 ----------------------------
 
