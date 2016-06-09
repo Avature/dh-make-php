@@ -24,8 +24,7 @@ DEPENDS=
 BUILDDEPENDS=
 DEPARCH=any
 DONTUSECONFD=false
-
-PHPVERSIONS="5"
+PHPVERSION=7
 
 if [ -d /etc/php5/mods-available ];
 then
@@ -60,7 +59,7 @@ Options:
   --only          set PHP major version (4 or 5) to build modules for
                   (default is both) THIS OPTION IS DEPRECATED!!!!
   --phpversion    set the PHP major versions to build modules for
-                  (default is 5)
+                  (default is 7)
   --dont-use-confd  do not create package with ps.ini in conf.d, but modify
                   global php.ini by debconf
   --php55-conf    force php5.5-style conf.d directory layout
