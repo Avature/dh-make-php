@@ -195,13 +195,10 @@ cp ${PREFIX}/share/dh-make-php/xslt/changelog.xsl ${SRCPACKAGEDIR}/debian/
 BINARYTARGETS=""
 BUILDTARGETS=""
 CLEANTARGETS=""
-for PHPVER in $PHPVERSIONS
-do
-	BINARYTARGETS="${BINARYTARGETS}binary-arch-v${PHPVER} "
-	BUILDTARGETS="${BUILDTARGETS}build-v${PHPVER} "
-	CLEANTARGETS="${CLEANTARGETS}clean-v${PHPVER} "
-	PHPDEVDEPENDS="${PHPDEVDEPENDS}, php${PHPVER}-dev "
-done
+BINARYTARGETS="${BINARYTARGETS}binary-arch-v${PHPVERSION} "
+BUILDTARGETS="${BUILDTARGETS}build-v${PHPVERSION} "
+CLEANTARGETS="${CLEANTARGETS}clean-v${PHPVERSION} "
+PHPDEVDEPENDS="${PHPDEVDEPENDS}, php-dev "
 
 sed -e "s/##packagename##/${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}/g" \
     -e "s/##peclpackagerealname##/${PHP_PKG_NAME}/g" \
@@ -243,62 +240,59 @@ if [ "$DONTUSECONFD" = "true" ]; then
 	cp -r ${DEBTEMPDIR}/po ${SRCPACKAGEDIR}/debian/po
 fi
 
-# Generate templates specific to php[4|5]-(module) binary packages
-for PHPVERSION in $PHPVERSIONS
-do
-	BINPREFIX=php${PHPVERSION} #${DEBPACKAGEPREFIX}${PHPVERSION}
-	BINPACKAGE=${BINPREFIX}-${PHP_PKG_LOWNAME}
-	if [ "$DONTUSECONFD" = "true" ]; then
-		sed -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
-			-e "s/##phpversion##/${PHPVERSION}/g" \
-				${DEBTEMPDIR}/postinst > ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.postinst
-		chmod 755 ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.postinst
-	
-		sed -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
-			-e "s/##phpversion##/${PHPVERSION}/g" \
-				${DEBTEMPDIR}/prerm > ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.prerm
-		chmod 755 ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.prerm
-	else
-		if [ "$PHP55CONFD" = "true" ]; then
-			sed -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
-				-e "s/##phpversion##/${PHPVERSION}/g" \
-					${DEBTEMPDIR}/php55postinst > ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.postinst
+# Generate templates specific to php-(module) binary packages
+BINPREFIX=php${PHPVERSION} #${DEBPACKAGEPREFIX}${PHPVERSION}
+BINPACKAGE=${BINPREFIX}-${PHP_PKG_LOWNAME}
+if [ "$DONTUSECONFD" = "true" ]; then
+  sed -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
+    -e "s/##phpversion##/${PHPVERSION}/g" \
+      ${DEBTEMPDIR}/postinst > ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.postinst
+  chmod 755 ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.postinst
 
-			chmod 755 ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.postinst
-		fi
-	fi
-	
-	sed -e "s/##phpversion##/${PHPVERSION}/g" \
-		${DEBTEMPDIR}/dirs > ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.dirs
-	
-	if [ "$DONTUSECONFD" = "true" ]; then
-		sed -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
-			-e "s/##phpversion##/${PHPVERSION}/g" \
-				${DEBTEMPDIR}/config > ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.config
-		chmod 755 ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.config
-	fi
+  sed -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
+    -e "s/##phpversion##/${PHPVERSION}/g" \
+      ${DEBTEMPDIR}/prerm > ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.prerm
+  chmod 755 ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.prerm
+else
+  if [ "$PHP55CONFD" = "true" ]; then
+    sed -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
+      -e "s/##phpversion##/${PHPVERSION}/g" \
+        ${DEBTEMPDIR}/php55postinst > ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.postinst
 
-	sed -e "s/##phpversion##/${PHPVERSION}/g" \
-		-e "s/##lowpackage##/${PHP_PKG_LOWNAME}/g" \
-		-e "s/##package##/${PHP_PKG_NAME}/g" \
-		-e "s/##binpackagename##/${BINPACKAGE}/g" \
-		${DEBTEMPDIR}/control-bin >> ${SRCPACKAGEDIR}/debian/control
+    chmod 755 ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.postinst
+  fi
+fi
 
-	${PHPPKGINFO} ${SRCPACKAGEDIR} summary|sed -e 's/^/ /g' >> ${SRCPACKAGEDIR}/debian/control
-	echo ""  >> ${SRCPACKAGEDIR}/debian/control
-	echo " ."  >> ${SRCPACKAGEDIR}/debian/control
-	${PHPPKGINFO} ${SRCPACKAGEDIR} description|fmt -w70|sed -e 's/^[[:space:]]*$/./g'|sed -e 's/^/ /g' >> ${SRCPACKAGEDIR}/debian/control
-	echo ""  >> ${SRCPACKAGEDIR}/debian/control
-	echo ""  >> ${SRCPACKAGEDIR}/debian/control
+sed -e "s/##phpversion##/${PHPVERSION}/g" \
+  ${DEBTEMPDIR}/dirs > ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.dirs
 
-	if [ "$DONTUSECONFD" = "true" ]; then
-		cp ${DEBTEMPDIR}/templates ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.templates
-	fi
-done
+if [ "$DONTUSECONFD" = "true" ]; then
+  sed -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
+    -e "s/##phpversion##/${PHPVERSION}/g" \
+      ${DEBTEMPDIR}/config > ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.config
+  chmod 755 ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.config
+fi
+
+sed -e "s/##phpversion##/${PHPVERSION}/g" \
+  -e "s/##lowpackage##/${PHP_PKG_LOWNAME}/g" \
+  -e "s/##package##/${PHP_PKG_NAME}/g" \
+  -e "s/##binpackagename##/${BINPACKAGE}/g" \
+  ${DEBTEMPDIR}/control-bin >> ${SRCPACKAGEDIR}/debian/control
+
+${PHPPKGINFO} ${SRCPACKAGEDIR} summary|sed -e 's/^/ /g' >> ${SRCPACKAGEDIR}/debian/control
+echo ""  >> ${SRCPACKAGEDIR}/debian/control
+echo " ."  >> ${SRCPACKAGEDIR}/debian/control
+${PHPPKGINFO} ${SRCPACKAGEDIR} description|fmt -w70|sed -e 's/^[[:space:]]*$/./g'|sed -e 's/^/ /g' >> ${SRCPACKAGEDIR}/debian/control
+echo ""  >> ${SRCPACKAGEDIR}/debian/control
+echo ""  >> ${SRCPACKAGEDIR}/debian/control
+
+if [ "$DONTUSECONFD" = "true" ]; then
+  cp ${DEBTEMPDIR}/templates ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.templates
+fi
 
 HASPHPSCRIPT=$(${PHPPKGINFO} ${SRCPACKAGEDIR} hasphpscript)
 if [ "$HASPHPSCRIPT" = "1" ]; then
-	DEPENDS="${DEPENDS}, php${PHPVERSION}-cli"
+	DEPENDS="${DEPENDS}, php-cli"
 fi
 
 sed -e "s/##packagename##/${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}/g" \
