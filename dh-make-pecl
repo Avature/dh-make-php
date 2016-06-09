@@ -106,25 +106,6 @@ while
 		--templatedir) # set alternative template dir
 			DEBTEMPDIR="$2"; shift
 			;;
-		--only) # only create modules for one of php4|php5
-			echo "The option --only is deprecated. Please check the manual page."
-			exit 0
-
-			PHPVERSIONS=$2; shift
-			if [ "$PHPVERSIONS" != "4" ] && [ "$PHPVERSIONS" != "5" ]
-			then
-				echo "Invalid argument to --only."
-				exit 0
-			fi
-			;;
-		--phpversion) # create modules for the given php versions
-			PHPVERSIONS=$2; shift
-			echo $PHPVERSIONS | grep "[4-5] [4-5]"
-			if [ $? -eq 0 ] ; then
-				echo "Invalid argument to --phpversion."
-				exit 0
-			fi
-			;;
 		--dont-use-confd) # place ini file in conf.d
 			DONTUSECONFD=true;
 			;;
