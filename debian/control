@@ -8,7 +8,7 @@ Standards-Version: 3.8.1
 
 Package: dh-make-php
 Architecture: all
-Depends: ${misc:Depends}, php5-cli, php-pear, cdbs
+Depends: ${misc:Depends}, php-cli | php5-cli, php-pear, cdbs
 Description: Creates Debian source packages for PHP PEAR and PECL extensions
  Contains dh-make-pear and dh-make-pecl, which create Debian source packages
  from PHP PEAR and PECL packages respectively.
