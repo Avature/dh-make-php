@@ -33,6 +33,7 @@ CLEANTARGETS=##cleantargets##
 PHP55CONFD=##php55confd##
 PHPAPIVER=$(shell /usr/bin/php-config --phpapi)
 DH_ARGS=##dhargs##
+PHPCONFD=$(shell echo "##phpconfd##" | sed -e "s-/--")
 
 %:
 	cp -r $(SOURCE_DIR)/* .
@@ -56,10 +57,7 @@ override_dh_genconf:
 
 override_dh_auto_install:
 	dh_install modules/$(PECL_PKG_NAME).so $(EXT_DIR)
-ifeq (,$(findstring true,$(PHP55CONFD)))
-	dh_install debian/$(PECL_PKG_NAME).ini etc/php/mods-available
-else
-	dh_install debian/$(BIN_PACKAGE_NAME).ini etc/php/conf.d
+	dh_install debian/$(BIN_PACKAGE_NAME).ini $(PHPCONFD)
 endif
 	dh_auto_install
 

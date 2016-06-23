@@ -26,6 +26,7 @@ BUILDDEPENDS=
 DEPARCH=any
 DONTUSECONFD=false
 PHPVERSION=7
+PHP_CONFD="${PHPCONFD:-/etc/php/7.0/mods-available}"
 
 if [ -d /etc/php5/mods-available ];
 then
@@ -66,6 +67,7 @@ Options:
   --php55-conf    force php5.5-style conf.d directory layout
                   (is default if directory /etc/php5/mods-available exists)
   --no-php55-conf disable php5.5-style conf.d directory layout, even if dir exists
+  --php-confd-dir set conf.d directory path it default is ${PHP_CONFD}
 eof
 }
 # }}}
@@ -116,6 +118,9 @@ while
 		--no-php55-conf)
 			PHP55CONFD=false;
 			;;
+		--php-confd-dir) # place ini file in this dir
+			PHP_CONFD="$2"; shift
+            ;;
 		"")
 			break
 			;;
@@ -201,15 +206,15 @@ BUILDTARGETS="${BUILDTARGETS}build-v${PHPVERSION} "
 CLEANTARGETS="${CLEANTARGETS}clean-v${PHPVERSION} "
 PHPDEVDEPENDS="${PHPDEVDEPENDS}, php-dev "
 
-sed -e "s/##packagename##/${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}/g" \
-    -e "s/##peclpackagerealname##/${PHP_PKG_NAME}/g" \
-    -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
-    -e "s/##version##/${VERSION}/g" \
-    -e "s/##binarytargets##/${BINARYTARGETS}/g" \
-    -e "s/##buildtargets##/${BUILDTARGETS}/g" \
-    -e "s/##cleantargets##/${CLEANTARGETS}/g" \
-    -e "s/##php55confd##/${PHP55CONFD}/g" \
-    -e "s/##packageprefix##/php/g" \
+sed -e "s|##packagename##|${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}|g" \
+    -e "s|##peclpackagerealname##|${PHP_PKG_NAME}|g" \
+    -e "s|##peclpackagename##|${PHP_PKG_LOWNAME}|g" \
+    -e "s|##version##|${VERSION}|g" \
+    -e "s|##binarytargets##|${BINARYTARGETS}|g" \
+    -e "s|##buildtargets##|${BUILDTARGETS}|g" \
+    -e "s|##cleantargets##|${CLEANTARGETS}|g" \
+    -e "s|##phpconfd##|${PHP_CONFD}|g" \
+    -e "s|##packageprefix##|php|g" \
     ${DEBTEMPDIR}/rules > ${SRCPACKAGEDIR}/debian/rules
 chmod 755 ${SRCPACKAGEDIR}/debian/rules
 
@@ -231,7 +236,9 @@ sed -e "s/##phpdevdepends##/${PHPDEVDEPENDS}/g" \
 		${DEBTEMPDIR}/control > ${SRCPACKAGEDIR}/debian/control
 
 if [ "$DONTUSECONFD" = "false" ]; then
-sed -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
+sed \
+    -e "s/##priority##/${PHP_CONFD_PRIORITY}/g" \
+    -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
 		${DEBTEMPDIR}/php.ini > ${SRCPACKAGEDIR}/debian/${PHP_PKG_LOWNAME}.ini
 fi
 
