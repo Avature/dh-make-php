@@ -27,6 +27,7 @@ DEPARCH=any
 DONTUSECONFD=false
 PHPVERSION=7
 PHP_CONFD="${PHPCONFD:-/etc/php/7.0/mods-available}"
+PHP_ENMOD="${PHPENMOD:-phpenmod}"
 
 if [ -d /etc/php5/mods-available ];
 then
@@ -264,11 +265,11 @@ if [ "$DONTUSECONFD" = "true" ]; then
 else
   if [ "$PHP55CONFD" = "true" ]; then
     sed -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
-      -e "s/##phpversion##/${PHPVERSION}/g" \
-        ${DEBTEMPDIR}/php55postinst > ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.postinst
+        -e "s/##phpversion##/${PHPVERSION}/g" \
+        -e "s/##phpenmod##/${PHP_ENMOD}/g" \
+        ${DEBTEMPDIR}/phppostinst > ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.postinst
 
     chmod 755 ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.postinst
-  fi
 fi
 
 sed -e "s/##phpversion##/${PHPVERSION}/g" \

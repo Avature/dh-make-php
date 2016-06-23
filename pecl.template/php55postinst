@@ -1,9 +1,0 @@
-#!/bin/sh
-
-set -e
-
-[ "$1" = "configure" ] && php5enmod ##peclpackagename##
-
-#DEBHELPER#
-
-exit 0
