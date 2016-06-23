@@ -36,7 +36,7 @@ PHP_CONFD_PRIORITY="${PHP_CONFD_PRIORITY-20}"
 # print summary of options
 usage()
 {
-	cat <<eof
+    cat <<eof
 This is ${PROGNAME} Version ${PROGVERSION}
 Copyright (c) 2004-2005 Uwe Steinmann <steinm@debian.org>
 
@@ -67,87 +67,87 @@ eof
 
 # command line options {{{
 if [ $# = 0 ]; then
-	usage
-	exit 0
+    usage
+    exit 0
 fi
 
 while
-	case $1 in
-		--help|-h) # print usage
-			usage
-			exit 0
-			;;
-		--version|-v) # show version
+    case $1 in
+        --help|-h) # print usage
+            usage
+            exit 0
+            ;;
+        --version|-v) # show version
       echo ${PROGVERSION}
-			exit 0
-			;;
-		--maintainer) # set maintainer of debian package
-			DEBMAINTAINER="$2"; shift
-			;;
-		--arch) # set architecture of debian package
-			DEBARCH="$2"; shift
-			;;
-		--depends) # set extra depends for debian package
-			DEPENDS=", $2"; shift
-			;;
-		--build-depends) # set extra build-depends for debian package
-			BUILDDEPENDS=", $2"; shift
-			;;
-		--prefix) # set prefix for name of debian package
-			DEBPACKAGEPREFIX="$2"; shift
-			;;
-		--package-name) # overwrite module name from package.xml
-			OVERPACKAGENAME=$2; shift
-			;;
-		--templatedir) # set alternative template dir
-			DEBTEMPDIR="$2"; shift
-			;;
-		--dont-use-confd) # place ini file in conf.d
-			DONTUSECONFD=true;
-			;;
-		--php-confd-dir) # place ini file in this dir
-			PHP_CONFD="$2"; shift
+            exit 0
+            ;;
+        --maintainer) # set maintainer of debian package
+            DEBMAINTAINER="$2"; shift
+            ;;
+        --arch) # set architecture of debian package
+            DEBARCH="$2"; shift
+            ;;
+        --depends) # set extra depends for debian package
+            DEPENDS=", $2"; shift
+            ;;
+        --build-depends) # set extra build-depends for debian package
+            BUILDDEPENDS=", $2"; shift
+            ;;
+        --prefix) # set prefix for name of debian package
+            DEBPACKAGEPREFIX="$2"; shift
+            ;;
+        --package-name) # overwrite module name from package.xml
+            OVERPACKAGENAME=$2; shift
+            ;;
+        --templatedir) # set alternative template dir
+            DEBTEMPDIR="$2"; shift
+            ;;
+        --dont-use-confd) # place ini file in conf.d
+            DONTUSECONFD=true;
+            ;;
+        --php-confd-dir) # place ini file in this dir
+            PHP_CONFD="$2"; shift
             ;;
         --php-confd-priority) # set priority for ini file
             PHP_CONFD_PRIORITY="$2"; shift
             ;;
-		"")
-			break
-			;;
-		*)
-			PECLPACKAGENAME="$1"
-			break
-			;;
-	esac
+        "")
+            break
+            ;;
+        *)
+            PECLPACKAGENAME="$1"
+            break
+            ;;
+    esac
 do test $# -gt 0 && shift; done
 # }}}
 
 if [ -n "${PECLPACKAGENAME}" ]; then
-	if [ -f ${PECLPACKAGENAME} ]; then
-		tar xzf ${PECLPACKAGENAME}
-	else
-		if TEMPMSG=$(/usr/bin/pecl download ${PECLPACKAGENAME} 2> /dev/null | grep -v ^WARNING); then
-			echo ${TEMPMSG}
-			PECLPACKAGENAME=$(echo ${TEMPMSG} | sed 's/.*downloading \([^ ]*\).*/\1/g' )
-			tar xzf ${PECLPACKAGENAME}
-		else
-			echo "Downloading pecl package '${PECLPACKAGENAME}' failed!";
-			echo "Check http://pecl.php.net/ for available packages.";
-			exit 0
-		fi
-	fi
+    if [ -f ${PECLPACKAGENAME} ]; then
+        tar xzf ${PECLPACKAGENAME}
+    else
+        if TEMPMSG=$(/usr/bin/pecl download ${PECLPACKAGENAME} 2> /dev/null | grep -v ^WARNING); then
+            echo ${TEMPMSG}
+            PECLPACKAGENAME=$(echo ${TEMPMSG} | sed 's/.*downloading \([^ ]*\).*/\1/g' )
+            tar xzf ${PECLPACKAGENAME}
+        else
+            echo "Downloading pecl package '${PECLPACKAGENAME}' failed!";
+            echo "Check http://pecl.php.net/ for available packages.";
+            exit 0
+        fi
+    fi
 else
-	usage
-	exit 0
+    usage
+    exit 0
 fi
 
 # get information about package from package.xml
 eval_package
 
 if [ -n "${OVERPACKAGENAME}" ]; then
-	mv ${PHP_PKG_NAME}-${VERSION} ${OVERPACKAGENAME}-${VERSION}
-	PHP_PKG_NAME=${OVERPACKAGENAME}
-	PHP_PKG_LOWNAME=$(echo $PHP_PKG_NAME | awk '{print tolower($0)}' | sed 's/_/-/g')
+    mv ${PHP_PKG_NAME}-${VERSION} ${OVERPACKAGENAME}-${VERSION}
+    PHP_PKG_NAME=${OVERPACKAGENAME}
+    PHP_PKG_LOWNAME=$(echo $PHP_PKG_NAME | awk '{print tolower($0)}' | sed 's/_/-/g')
 fi
 
 SRCPACKAGEDIR=${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}-${VERSION}
@@ -159,8 +159,8 @@ echo "Upstream is: ${UPSTREAM}"
 get_maintainer
 
 if [ -d ${SRCPACKAGEDIR} ] ; then
-	echo "Directory '${SRCPACKAGEDIR}' already exists."
-	exit
+    echo "Directory '${SRCPACKAGEDIR}' already exists."
+    exit
 fi
 ln -s ${PECLPACKAGENAME} ${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}_${VERSION}.orig.tar.gz
 mkdir ${SRCPACKAGEDIR}
@@ -181,7 +181,7 @@ sed -e "s/##date##/`(LC_ALL=C; date -R)`/g" \
     -e "s/##peclpkgname##/${PHP_PKG_NAME}/g" \
     ${DEBTEMPDIR}/copyright > ${SRCPACKAGEDIR}/debian/copyright
 if [ -n "${LICENSEFILE}" ]; then
-	cat "${LICENSEFILE}" >> ${SRCPACKAGEDIR}/debian/copyright
+    cat "${LICENSEFILE}" >> ${SRCPACKAGEDIR}/debian/copyright
 fi
 
 # changelog.xsl is copied into the source package in order to prevent
@@ -212,30 +212,30 @@ sed -e "s/##packagename##/${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}/g" \
     -e "s/##date##/`(LC_ALL=C; date -R)`/g" \
     -e "s/##maintainer##/${DEBMAINTAINER}/g" \
     -e "s/##version##/${VERSION}/g" \
-		${DEBTEMPDIR}/changelog > ${SRCPACKAGEDIR}/debian/changelog
+        ${DEBTEMPDIR}/changelog > ${SRCPACKAGEDIR}/debian/changelog
 
 sed -e "s/##packagename##/${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}/g" \
     -e "s/##date##/`(LC_ALL=C; date -R)`/g" \
     -e "s/##maintainer##/${DEBMAINTAINER}/g" \
-		${DEBTEMPDIR}/README.Debian > ${SRCPACKAGEDIR}/debian/README.Debian
+        ${DEBTEMPDIR}/README.Debian > ${SRCPACKAGEDIR}/debian/README.Debian
 
 sed -e "s/##peclpackagename##/${PHP_PKG_NAME}/g" \
-		${DEBTEMPDIR}/watch > ${SRCPACKAGEDIR}/debian/watch
+        ${DEBTEMPDIR}/watch > ${SRCPACKAGEDIR}/debian/watch
 
 sed -e "s/##phpdevdepends##/${PHPDEVDEPENDS}/g" \
-		${DEBTEMPDIR}/control > ${SRCPACKAGEDIR}/debian/control
+        ${DEBTEMPDIR}/control > ${SRCPACKAGEDIR}/debian/control
 
 if [ "$DONTUSECONFD" = "false" ]; then
 sed \
     -e "s/##priority##/${PHP_CONFD_PRIORITY}/g" \
     -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
-		${DEBTEMPDIR}/php.ini > ${SRCPACKAGEDIR}/debian/${PHP_PKG_LOWNAME}.ini
+        ${DEBTEMPDIR}/php.ini > ${SRCPACKAGEDIR}/debian/${PHP_PKG_LOWNAME}.ini
 fi
 
 #cp ${DEBTEMPDIR}/control ${SRCPACKAGEDIR}/debian/control
 #cp ${DEBTEMPDIR}/templates ${SRCPACKAGEDIR}/debian/templates
 if [ "$DONTUSECONFD" = "true" ]; then
-	cp -r ${DEBTEMPDIR}/po ${SRCPACKAGEDIR}/debian/po
+    cp -r ${DEBTEMPDIR}/po ${SRCPACKAGEDIR}/debian/po
 fi
 
 # Generate templates specific to php-(module) binary packages
@@ -248,7 +248,7 @@ if [ "$DONTUSECONFD" = "true" ]; then
   chmod 755 ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.postinst
 
   sed -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
-    -e "s/##phpversion##/${PHPVERSION}/g" \
+      -e "s/##phpversion##/${PHPVERSION}/g" \
       ${DEBTEMPDIR}/prerm > ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.prerm
   chmod 755 ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.prerm
 else
@@ -289,7 +289,7 @@ fi
 
 HASPHPSCRIPT=$(${PHPPKGINFO} ${SRCPACKAGEDIR} hasphpscript)
 if [ "$HASPHPSCRIPT" = "1" ]; then
-	DEPENDS="${DEPENDS}, php-cli"
+    DEPENDS="${DEPENDS}, php-cli"
 fi
 
 sed -e "s/##packagename##/${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}/g" \
