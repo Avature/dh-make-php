@@ -10,15 +10,16 @@
 
 PROGNAME=dh-make-pecl
 PROGVERSION=0.3.0
-PREFIX=/usr
+PREFIX=${PREFIX:-/usr}
 
 DEBPACKAGEPREFIX=php-
-DEBTEMPDIR=${PREFIX}/share/dh-make-php/pecl.template
+SCRIPT_RESOURCES=${SCRIPT_RESOURCES:-${PREFIX}/share/dh-make-php}
+DEBTEMPDIR=${DEBTEMPDIR:-"$SCRIPT_RESOURCES/pecl.template"}
 PACKAGEDOCFILES="README readme CREDITS TODO AUTHORS"
 # if you change the examples directory make sure to adjust the
 # regular expression to set the PACKAGEDOCFILES
 PACKAGEEXPFILES="examples"
-PHPPKGINFO=${PREFIX}/share/dh-make-php/phppkginfo
+PHPPKGINFO=${SCRIPT_RESOURCES}/phppkginfo
 DEBMAINTAINER=
 DEPENDS=
 BUILDDEPENDS=
@@ -33,7 +34,7 @@ else
 	PHP55CONFD=false
 fi
 
-. ${PREFIX}/share/dh-make-php/dh-make-php.lib
+. ${SCRIPT_RESOURCES}/dh-make-php.lib
 
 # usage() {{{
 # print summary of options
@@ -190,7 +191,7 @@ fi
 
 # changelog.xsl is copied into the source package in order to prevent
 # a dependency on dh-make-php
-cp ${PREFIX}/share/dh-make-php/xslt/changelog.xsl ${SRCPACKAGEDIR}/debian/
+cp ${SCRIPT_RESOURCES}/xslt/changelog.xsl ${SRCPACKAGEDIR}/debian/
 
 BINARYTARGETS=""
 BUILDTARGETS=""
