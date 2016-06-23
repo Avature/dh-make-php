@@ -28,6 +28,7 @@ DONTUSECONFD=false
 PHPVERSION=7
 PHP_CONFD="${PHPCONFD:-/etc/php/7.0/mods-available}"
 PHP_ENMOD="${PHPENMOD:-phpenmod}"
+PHP_CONFD_PRIORITY="${PHP_CONFD_PRIORITY-20}"
 
 if [ -d /etc/php5/mods-available ];
 then
@@ -69,6 +70,7 @@ Options:
                   (is default if directory /etc/php5/mods-available exists)
   --no-php55-conf disable php5.5-style conf.d directory layout, even if dir exists
   --php-confd-dir set conf.d directory path it default is ${PHP_CONFD}
+  --php-confd-priority   set priority for the extension file defaut is ${PHP_CONFD_PRIORITY}
 eof
 }
 # }}}
@@ -121,6 +123,9 @@ while
 			;;
 		--php-confd-dir) # place ini file in this dir
 			PHP_CONFD="$2"; shift
+            ;;
+        --php-confd-priority) # set priority for ini file
+            PHP_CONFD_PRIORITY="$2"; shift
             ;;
 		"")
 			break
