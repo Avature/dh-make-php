@@ -30,13 +30,6 @@ PHP_CONFD="${PHPCONFD:-/etc/php/7.0/mods-available}"
 PHP_ENMOD="${PHPENMOD:-phpenmod}"
 PHP_CONFD_PRIORITY="${PHP_CONFD_PRIORITY-20}"
 
-if [ -d /etc/php5/mods-available ];
-then
-	PHP55CONFD=true
-else
-	PHP55CONFD=false
-fi
-
 . ${SCRIPT_RESOURCES}/dh-make-php.lib
 
 # usage() {{{
@@ -66,9 +59,6 @@ Options:
                   (default is 7)
   --dont-use-confd  do not create package with ps.ini in conf.d, but modify
                   global php.ini by debconf
-  --php55-conf    force php5.5-style conf.d directory layout
-                  (is default if directory /etc/php5/mods-available exists)
-  --no-php55-conf disable php5.5-style conf.d directory layout, even if dir exists
   --php-confd-dir set conf.d directory path it default is ${PHP_CONFD}
   --php-confd-priority   set priority for the extension file defaut is ${PHP_CONFD_PRIORITY}
 eof
@@ -114,12 +104,6 @@ while
 			;;
 		--dont-use-confd) # place ini file in conf.d
 			DONTUSECONFD=true;
-			;;
-		--php55-conf)
-			PHP55CONFD=true;
-			;;
-		--no-php55-conf)
-			PHP55CONFD=false;
 			;;
 		--php-confd-dir) # place ini file in this dir
 			PHP_CONFD="$2"; shift
@@ -268,7 +252,6 @@ if [ "$DONTUSECONFD" = "true" ]; then
       ${DEBTEMPDIR}/prerm > ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.prerm
   chmod 755 ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.prerm
 else
-  if [ "$PHP55CONFD" = "true" ]; then
     sed -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
         -e "s/##phpversion##/${PHPVERSION}/g" \
         -e "s/##phpenmod##/${PHP_ENMOD}/g" \
