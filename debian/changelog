@@ -1,3 +1,10 @@
+dh-make-php (0.6.0) precise; urgency=low
+
+  Adds --php-confd-dir option to set conf.d directory path
+  Adds --php-confd-priority option set priority for the extension file
+
+ -- Javier Santacruz <javier@avature.net>  Thu, 23 Jun 2016 14:51:59 +0200
+
 dh-make-php (0.5.0~avature) precise; urgency=low
 
   * Adapt to php7
