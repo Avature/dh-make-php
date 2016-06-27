@@ -9,7 +9,7 @@
 # at http://www.gnu.org/.
 
 PROGNAME=dh-make-pear
-PROGVERSION=0.6.0
+PROGVERSION=0.6.1
 PREFIX=/usr
 
 DEBPACKAGEPREFIX=php-

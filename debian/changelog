@@ -1,3 +1,10 @@
+dh-make-php (0.6.1) precise; urgency=low
+
+  * Fixes config install issue with generated rules for pecl
+  * Reject trailing arguments when parsing script parameters
+
+ -- Javier Santacruz <javier@avature.net>  Mon, 27 Jun 2016 13:25:57 +0200
+
 dh-make-php (0.6.0) precise; urgency=low
 
   Adds --php-confd-dir option to set conf.d directory path
