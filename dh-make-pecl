@@ -229,7 +229,7 @@ if [ "$DONTUSECONFD" = "false" ]; then
 sed \
     -e "s/##priority##/${PHP_CONFD_PRIORITY}/g" \
     -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
-        ${DEBTEMPDIR}/php.ini > ${SRCPACKAGEDIR}/debian/${PHP_PKG_LOWNAME}.ini
+    ${DEBTEMPDIR}/php.ini > ${SRCPACKAGEDIR}/debian/${PHP_PKG_LOWNAME}.ini
 fi
 
 #cp ${DEBTEMPDIR}/control ${SRCPACKAGEDIR}/debian/control
