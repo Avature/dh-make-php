@@ -78,7 +78,7 @@ while
             exit 0
             ;;
         --version|-v) # show version
-      echo ${PROGVERSION}
+            echo ${PROGVERSION}
             exit 0
             ;;
         --maintainer) # set maintainer of debian package
@@ -116,10 +116,17 @@ while
             ;;
         *)
             PECLPACKAGENAME="$1"
+            shift
             break
             ;;
     esac
 do test $# -gt 0 && shift; done
+
+if test $# -gt 0; then
+    echo "Unexpected trailing arguments: $@"
+    exit 1;
+fi
+
 # }}}
 
 if [ -n "${PECLPACKAGENAME}" ]; then
@@ -141,7 +148,9 @@ else
     exit 0
 fi
 
+
 # get information about package from package.xml
+# this will set VERSION and other envvars
 eval_package
 
 if [ -n "${OVERPACKAGENAME}" ]; then
