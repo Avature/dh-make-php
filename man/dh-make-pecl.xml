@@ -106,8 +106,6 @@ and docbook-xsl in your Build-Depends control field.
       <arg><option>--only <replaceable>4|5</replaceable></option></arg>
       <arg><option>--phpversion <replaceable>4 5</replaceable></option></arg>
       <arg><option>--dont-use-confd</option></arg>
-      <arg><option>--php55-conf</option></arg>
-      <arg><option>--no-php55-conf</option></arg>
       <arg>PACKAGE</arg>
     </cmdsynopsis>
   </refsynopsisdiv>
@@ -271,29 +269,6 @@ and docbook-xsl in your Build-Depends control field.
             Since Version 0.2.1 of dh-make-php this is the default behaviour
             when creating packages. If you prefer the old way of creating
             php pecl packages use this option.
-            </para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term><option>--php55-conf</option>
-        </term>
-        <listitem>
-          <para>PHP 5.5 has introduced a new configuration schema for pecl
-					  extensions. This is used by default, if /etc/php5/mods-available
-						is found on the system wher dh-make-pecl runs. This option is
-						provided to explicity turn on PHP 5.5 configuration even if the
-						default is off.
-            </para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term><option>--no-php55-conf</option>
-        </term>
-        <listitem>
-          <para>
-						This option is
-						provided to explicity turn off PHP 5.5 configuration even if the
-						default is on.
             </para>
         </listitem>
       </varlistentry>

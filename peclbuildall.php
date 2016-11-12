@@ -7,4 +7,3 @@ foreach($packages as $package) {
 	$cmd = "dh-make-pecl ".$extraoptions. " --maintainer \"".$maintainer."\" ".$package["pkgname"];
 	echo $cmd."\n";
 }
-?>
