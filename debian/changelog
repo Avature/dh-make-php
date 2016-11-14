@@ -1,22 +1,29 @@
+dh-make-php (0.6.2) precise; urgency=low
+
+  * Fix changelog style issues
+  * Merge pull request #1 from szepeviktor/master
+
+ -- Javier Santacruz <javier.santacruz@avature.net>  Mon, 14 Nov 2016 12:05:31 +0100
+
 dh-make-php (0.6.1) precise; urgency=low
 
   * Fixes config install issue with generated rules for pecl
   * Reject trailing arguments when parsing script parameters
 
- -- Javier Santacruz <javier@avature.net>  Mon, 27 Jun 2016 13:25:57 +0200
+ -- Javier Santacruz <javier.santacruz@avature.net>  Mon, 27 Jun 2016 13:25:57 +0200
 
 dh-make-php (0.6.0) precise; urgency=low
 
   * Adds --php-confd-dir option to set conf.d directory path
   * Adds --php-confd-priority option set priority for the extension file
 
- -- Javier Santacruz <javier@avature.net>  Thu, 23 Jun 2016 14:51:59 +0200
+ -- Javier Santacruz <javier.santacruz@avature.net>  Thu, 23 Jun 2016 14:51:59 +0200
 
 dh-make-php (0.5.0~avature) precise; urgency=low
 
   * Adapt to php7
 
- -- Javier Santacruz <javier.sanatcruz@avature.net>  Thu, 09 Jun 2016 17:28:55 +0200
+ -- Javier Santacruz <javier.santacruz@avature.net>  Thu, 09 Jun 2016 17:28:55 +0200
 
 dh-make-php (0.4.0) unstable; urgency=low
 

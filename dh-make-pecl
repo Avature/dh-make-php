@@ -9,8 +9,8 @@
 # at http://www.gnu.org/.
 
 PROGNAME=dh-make-pecl
-PROGVERSION=0.6.1
-PREFIX=${PREFIX:-/usr}
+PROGVERSION=0.6.2
+PREFIX=/usr
 
 DEBPACKAGEPREFIX=php-
 SCRIPT_RESOURCES=${SCRIPT_RESOURCES:-${PREFIX}/share/dh-make-php}
