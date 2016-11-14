@@ -1,5 +1,3 @@
-#!/bin/sh
-
 get_maintainer() {
 	if [ -z "${DEBMAINTAINER}" ] ; then
 		echo -n "Guessing Maintainer: "

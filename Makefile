@@ -10,12 +10,12 @@ manpages: dh-make-pecl.1.gz dh-make-pear.1.gz
 dh-make-pecl.1.gz: man/dh-make-pecl.xml
 	$(XP) $(DB2MAN) $<
 	rm -f dh-make-pecl.1.gz
-	gzip -9 dh-make-pecl.1
+	gzip -n -9 dh-make-pecl.1
 	
 dh-make-pear.1.gz: man/dh-make-pear.xml
 	$(XP) $(DB2MAN) $<
 	rm -f dh-make-pear.1.gz
-	gzip -9 dh-make-pear.1
+	gzip -n -9 dh-make-pear.1
 	
 install: install-bin install-share install-man
 

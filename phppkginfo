@@ -10,7 +10,7 @@ function usage() {
 	echo "  version      - Version of package\n";
 	echo "  maintainers  - Comma separated list of maintainers\n";
 	echo "  summary      - Short summary of package\n";
-	echo "  description  ¯ Long description of package\n";
+	echo "  description  - Long description of package\n";
 	echo "  packagerversion - Version of packager\n";
 	echo "  package      - Name of package\n";
 	echo "  release_license - License of released version\n";
@@ -173,5 +173,3 @@ if(get_class($pf) == "PEAR_PackageFile_v1") {
 		default:
 	}
 }
-
-?>
