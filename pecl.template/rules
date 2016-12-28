@@ -30,9 +30,7 @@ SOURCE_DIR=$(shell ls -d $(PECL_PKG_REALNAME)-*)
 BINARYTARGETS=##binarytargets##
 BUILDTARGETS=##buildtargets##
 CLEANTARGETS=##cleantargets##
-PHP55CONFD=##php55confd##
 PHPAPIVER=$(shell /usr/bin/php-config --phpapi)
-DH_ARGS=##dhargs##
 PHPCONFD=$(shell echo "##phpconfd##" | sed -e "s-/--")
 
 %:
