@@ -207,7 +207,7 @@ PHPDEVDEPENDS="${PHPDEVDEPENDS}, php-dev "
 
 sed -e "s|##packagename##|${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}|g" \
     -e "s|##peclpackagerealname##|${PHP_PKG_NAME}|g" \
-    -e "s|##peclpackagename##|${PHP_PKG_LOWNAME}|g" \
+    -e "s|##peclpackagename##|${PHP_PKG_NAME}|g" \
     -e "s|##version##|${VERSION}|g" \
     -e "s|##binarytargets##|${BINARYTARGETS}|g" \
     -e "s|##buildtargets##|${BUILDTARGETS}|g" \
@@ -237,8 +237,8 @@ sed -e "s/##phpdevdepends##/${PHPDEVDEPENDS}/g" \
 if [ "$DONTUSECONFD" = "false" ]; then
 sed \
     -e "s/##priority##/${PHP_CONFD_PRIORITY}/g" \
-    -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
-    ${DEBTEMPDIR}/php.ini > ${SRCPACKAGEDIR}/debian/${PHP_PKG_LOWNAME}.ini
+    -e "s/##peclpackagename##/${PHP_PKG_NAME}/g" \
+    ${DEBTEMPDIR}/php.ini > ${SRCPACKAGEDIR}/debian/${PHP_PKG_NAME}.ini
 fi
 
 #cp ${DEBTEMPDIR}/control ${SRCPACKAGEDIR}/debian/control
@@ -251,7 +251,7 @@ fi
 BINPREFIX=php  #${DEBPACKAGEPREFIX}${PHPVERSION}
 BINPACKAGE=${BINPREFIX}-${PHP_PKG_LOWNAME}
 if [ "$DONTUSECONFD" = "true" ]; then
-  sed -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
+  sed -e "s/##peclpackagename##/${PHP_PKG_NAME}/g" \
     -e "s/##phpversion##/${PHPVERSION}/g" \
       ${DEBTEMPDIR}/postinst > ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.postinst
   chmod 755 ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.postinst
@@ -261,7 +261,7 @@ if [ "$DONTUSECONFD" = "true" ]; then
       ${DEBTEMPDIR}/prerm > ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.prerm
   chmod 755 ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.prerm
 else
-    sed -e "s/##peclpackagename##/${PHP_PKG_LOWNAME}/g" \
+    sed -e "s/##peclpackagename##/${PHP_PKG_NAME}/g" \
         -e "s/##phpversion##/${PHPVERSION}/g" \
         -e "s/##phpenmod##/${PHP_ENMOD}/g" \
         ${DEBTEMPDIR}/phppostinst > ${SRCPACKAGEDIR}/debian/${BINPACKAGE}.postinst
