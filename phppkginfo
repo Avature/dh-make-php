@@ -128,7 +128,12 @@ if(get_class($pf) == "PEAR_PackageFile_v1") {
 			echo $pf->_packageInfo["name"];
 			break;
 		case "license":
-			echo $pf->_packageInfo["license"];
+			if (isset($pf->_packageInfo["license"]["_content"])) {
+				$license = $pf->_packageInfo["license"]["_content"];
+			} else {
+				$license = $pf->_packageInfo["license"];
+			}
+			echo $license;
 			break;
 		case "maintainers":
 			$tmp = array();
