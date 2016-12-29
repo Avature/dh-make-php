@@ -93,12 +93,12 @@ if(get_class($pf) == "PEAR_PackageFile_v1") {
 			echo "Version ".$changelog["version"]." - ".$changelog["release_date"]." (".$changelog["release_state"].")\n";
 			echo "----------------------------------------\n";
 			echo "Notes:\n";
-			echo "  ".str_replace("\n", "\n  ", wordwrap(preg_replace("\s+", " ", $changelog["release_notes"])))."\n\n";
+			echo "  ".str_replace("\n", "\n  ", wordwrap(preg_replace('/\s+/', " ", $changelog["release_notes"])))."\n\n";
 			foreach($pf->_packageInfo["changelog"] as $changelog) {
 				echo "Version ".$changelog["version"]." - ".$changelog["release_date"]." (".$changelog["release_state"].")\n";
 				echo "----------------------------------------\n";
 				echo "Notes:\n";
-				echo "  ".str_replace("\n", "\n  ", wordwrap(preg_replace("\s+", " ", $changelog["release_notes"])))."\n\n";
+				echo "  ".str_replace("\n", "\n  ", wordwrap(preg_replace('/\s+/', " ", $changelog["release_notes"])))."\n\n";
 			}
 			break;
 		case "hasphpscript":
@@ -158,13 +158,13 @@ if(get_class($pf) == "PEAR_PackageFile_v1") {
 			echo "Version ".$changelog["version"]["release"]." - ".$changelog["date"]." (".$changelog["stability"]["release"].")\n";
 			echo "----------------------------------------\n";
 			echo "Notes:\n";
-			echo "  ".str_replace("\n", "\n  ", wordwrap(preg_replace("\s+", " ", $changelog["notes"])))."\n\n";
+			echo "  ".str_replace("\n", "\n  ", wordwrap(preg_replace('/\s+/', " ", $changelog["notes"])))."\n\n";
 			$tmparr = array_reverse($pf->_packageInfo["changelog"]["release"]);
 			foreach($tmparr as $changelog) {
 				echo "Version ".$changelog["version"]["release"]." - ".$changelog["date"]." (".$changelog["stability"]["release"].")\n";
 				echo "----------------------------------------\n";
 				echo "Notes:\n";
-				echo "  ".str_replace("\n", "\n  ", wordwrap(preg_replace("\s+", " ", $changelog["notes"])))."\n\n";
+				echo "  ".str_replace("\n", "\n  ", wordwrap(preg_replace('/\s+/', " ", $changelog["notes"])))."\n\n";
 			}
 			break;
 		case "hasphpscript":
