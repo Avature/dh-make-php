@@ -308,5 +308,5 @@ sed -e "s/##packagename##/${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}/g" \
     -e "s/##architecture##/${DEPARCH}/g" \
     -i ${SRCPACKAGEDIR}/debian/control
 
-echo "modules/${PHP_PKG_LOWNAME}.so" > ${SRCPACKAGEDIR}/debian/pecl
+echo "modules/${PHP_PKG_NAME}.so" > ${SRCPACKAGEDIR}/debian/pecl
 
