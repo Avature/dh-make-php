@@ -28,31 +28,3 @@ for SAPI in apache2 apache cgi cli; do
 done
 
 exit 0
-
-# Restart apache(s) so settings get refreshed
-if [ -d /etc/php${PHP_VERSION}/apache2 ]; then
-	for srv in apache2 ; do
-		if [ -x "/etc/init.d/$srv" ]; then
-			if [ -x /usr/sbin/invoke-rc.d ]; then
-				/usr/sbin/invoke-rc.d $srv force-reload
-			else
-				/etc/init.d/$srv force-reload
-			fi
-		fi
-	done
-fi
-
-if [ -d /etc/php${PHP_VERSION}/apache ]; then
-	for srv in apache apache-ssl apache-perl ; do
-		if [ -x "/etc/init.d/$srv" ]; then
-			if [ -x /usr/sbin/invoke-rc.d ]; then
-				/usr/sbin/invoke-rc.d $srv force-reload
-			else
-				/etc/init.d/$srv force-reload
-			fi
-		fi
-	done
-fi
-
-exit 0
-
