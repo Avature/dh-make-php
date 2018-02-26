@@ -12,6 +12,20 @@ PROGNAME=dh-make-pecl
 PROGVERSION=0.6.2
 PREFIX=/usr
 
+default_php_version()
+{
+    . /etc/lsb-release
+    if [ "$DISTRIB_CODENAME" = bionic ]; then
+        echo 7.2
+    elif [ "$DISTRIB_CODENAME" = xenial ]; then
+        echo 7.0
+    else
+        >&2 echo "Unknonw PHP target version.  Use '--phpversion' or export PHPVERSION"
+        exit 1
+    fi
+}
+
+
 DEBPACKAGEPREFIX=php-
 SCRIPT_RESOURCES=${SCRIPT_RESOURCES:-${PREFIX}/share/dh-make-php}
 DEBTEMPDIR=${DEBTEMPDIR:-"$SCRIPT_RESOURCES/pecl.template"}
@@ -25,8 +39,8 @@ DEPENDS=
 BUILDDEPENDS=
 DEPARCH=any
 DONTUSECONFD=false
-PHPVERSION=7
-PHP_CONFD="${PHPCONFD:-/etc/php/7.0/mods-available}"
+PHPVERSION="${PHPVERSION:-$(default_php_version)}"
+PHP_CONFD="${PHPCONFD:-/etc/php/$PHPVERSION/mods-available}"
 PHP_ENMOD="${PHPENMOD:-phpenmod}"
 PHP_CONFD_PRIORITY="${PHP_CONFD_PRIORITY-20}"
 
@@ -104,6 +118,9 @@ while
             ;;
         --dont-use-confd) # place ini file in conf.d
             DONTUSECONFD=true;
+            ;;
+        --phpversion)
+            PHPVERSION="$2"; shift
             ;;
         --php-confd-dir) # place ini file in this dir
             PHP_CONFD="$2"; shift
