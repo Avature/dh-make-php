@@ -12,19 +12,9 @@ PROGNAME=dh-make-pecl
 PROGVERSION=0.6.2
 PREFIX=/usr
 
-default_php_version()
-{
-    . /etc/lsb-release
-    if [ "$DISTRIB_CODENAME" = bionic ]; then
-        echo 7.2
-    elif [ "$DISTRIB_CODENAME" = xenial ]; then
-        echo 7.0
-    else
-        >&2 echo "Unknonw PHP target version.  Use '--phpversion' or export PHPVERSION"
-        exit 1
-    fi
+get_php_version() {
+    php --version | head -1 | sed 's/PHP \([0-9]\.[0-9]\).*/\1/g'
 }
-
 
 DEBPACKAGEPREFIX=php-
 SCRIPT_RESOURCES=${SCRIPT_RESOURCES:-${PREFIX}/share/dh-make-php}
@@ -39,7 +29,7 @@ DEPENDS=
 BUILDDEPENDS=
 DEPARCH=any
 DONTUSECONFD=false
-PHPVERSION="${PHPVERSION:-$(default_php_version)}"
+PHPVERSION="${PHPVERSION:-$(get_php_version)}"
 PHP_CONFD="${PHPCONFD:-/etc/php/$PHPVERSION/mods-available}"
 PHP_ENMOD="${PHPENMOD:-phpenmod}"
 PHP_CONFD_PRIORITY="${PHP_CONFD_PRIORITY-20}"
@@ -69,8 +59,8 @@ Options:
                   (default is ${DEBTEMPDIR})
   --only          set PHP major version (4 or 5) to build modules for
                   (default is both) THIS OPTION IS DEPRECATED!!!!
-  --phpversion    set the PHP major versions to build modules for
-                  (default is 7)
+  --phpversion    set the PHP version to build modules for
+                  (default is the default installed one)
   --dont-use-confd  do not create package with ps.ini in conf.d, but modify
                   global php.ini by debconf
   --php-confd-dir set conf.d directory path it default is ${PHP_CONFD}
