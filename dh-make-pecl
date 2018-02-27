@@ -12,6 +12,10 @@ PROGNAME=dh-make-pecl
 PROGVERSION=0.6.2
 PREFIX=/usr
 
+get_php_version() {
+    php --version | head -1 | sed 's/PHP \([0-9]\.[0-9]\).*/\1/g'
+}
+
 DEBPACKAGEPREFIX=php-
 SCRIPT_RESOURCES=${SCRIPT_RESOURCES:-${PREFIX}/share/dh-make-php}
 DEBTEMPDIR=${DEBTEMPDIR:-"$SCRIPT_RESOURCES/pecl.template"}
@@ -25,8 +29,8 @@ DEPENDS=
 BUILDDEPENDS=
 DEPARCH=any
 DONTUSECONFD=false
-PHPVERSION=7
-PHP_CONFD="${PHPCONFD:-/etc/php/7.0/mods-available}"
+PHPVERSION="${PHPVERSION:-$(get_php_version)}"
+PHP_CONFD="${PHPCONFD:-/etc/php/$PHPVERSION/mods-available}"
 PHP_ENMOD="${PHPENMOD:-phpenmod}"
 PHP_CONFD_PRIORITY="${PHP_CONFD_PRIORITY-20}"
 
@@ -55,8 +59,8 @@ Options:
                   (default is ${DEBTEMPDIR})
   --only          set PHP major version (4 or 5) to build modules for
                   (default is both) THIS OPTION IS DEPRECATED!!!!
-  --phpversion    set the PHP major versions to build modules for
-                  (default is 7)
+  --phpversion    set the PHP version to build modules for
+                  (default is the default installed one)
   --dont-use-confd  do not create package with ps.ini in conf.d, but modify
                   global php.ini by debconf
   --php-confd-dir set conf.d directory path it default is ${PHP_CONFD}
@@ -104,6 +108,9 @@ while
             ;;
         --dont-use-confd) # place ini file in conf.d
             DONTUSECONFD=true;
+            ;;
+        --phpversion)
+            PHPVERSION="$2"; shift
             ;;
         --php-confd-dir) # place ini file in this dir
             PHP_CONFD="$2"; shift
