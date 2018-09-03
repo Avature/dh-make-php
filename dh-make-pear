@@ -108,7 +108,7 @@ if [ -n "${PEARPACKAGENAME}" ]; then
 	else
 		if TEMPMSG=$(/usr/bin/pear -D preferred_state=${PREFSTATE} download ${PEARPACKAGENAME}); then
 			echo ${TEMPMSG}
-			PEARPACKAGENAME=$(echo ${TEMPMSG} | awk -F ' ' '{print $2'})
+			PEARPACKAGENAME=$(echo ${TEMPMSG} | awk '{if ($0 ~ /downloaded/) {print $2;}}')
 			tar xzf ${PEARPACKAGENAME}
 		else
 			echo "Downloading pear package '${PEARPACKAGENAME}' failed!";
@@ -173,11 +173,11 @@ if [ -n "${LICENSEFILE}" ]; then
 fi
 sed -e "s/##packagename##/${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}/g" \
     -e "s/##maintainer##/${DEBMAINTAINER}/g" \
-    -e "sง##summary##ง${SUMMARY}งg" \
+    -e "sยง##summary##ยง${SUMMARY}ยงg" \
     -e "s/##depends##/${DEPENDS}/g" \
     -e "s/##architecture##/${DEBARCH}/g" \
 		${DEBTEMPDIR}/control > ${SRCPACKAGEDIR}/debian/control
-		${PHPPKGINFO} ${SRCPACKAGEDIR} description | fmt -w 70|sed -e "sง^[ \t]*$ง.งg" -e "sง^ง งg" >> ${SRCPACKAGEDIR}/debian/control
+		${PHPPKGINFO} ${SRCPACKAGEDIR} description | fmt -w 70|sed -e "sยง^[ \t]*$ยง.ยงg" -e "sยง^ยง ยงg" >> ${SRCPACKAGEDIR}/debian/control
 sed -e "s/##packagename##/${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}/g" \
     -e "s/##version##/${VERSION}/g" \
     -e "s/##pearpkgname##/${PHP_PKG_NAME}/g" \
