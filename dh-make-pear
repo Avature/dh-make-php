@@ -9,7 +9,7 @@
 # at http://www.gnu.org/.
 
 PROGNAME=dh-make-pear
-PROGVERSION=0.6.2
+PROGVERSION=0.7.1
 PREFIX=/usr
 
 DEBPACKAGEPREFIX=php-
@@ -108,13 +108,19 @@ if [ -n "${PEARPACKAGENAME}" ]; then
 	else
 		if TEMPMSG=$(/usr/bin/pear -D preferred_state=${PREFSTATE} download ${PEARPACKAGENAME}); then
 			echo ${TEMPMSG}
-			PEARPACKAGENAME=$(echo ${TEMPMSG} | awk '{if ($0 ~ /downloaded/) {print $2;}}')
+			PEARPACKAGENAME=$(echo ${TEMPMSG} | awk '{print $(NF-1);}')
 			tar xzf ${PEARPACKAGENAME}
 		else
-			echo "Downloading pear package '${PEARPACKAGENAME}' failed!";
-			echo "${TEMPMSG}"
-			echo "Check http://pear.php.net/ for available packages.";
-			exit 0
+			if TEMPMSG=$(/usr/bin/pear -D preferred_state=${PREFSTATE} download ${PEARPACKAGENAME}); then
+				echo ${TEMPMSG}
+				PEARPACKAGENAME=$(echo ${TEMPMSG} | awk '{print $(NF-1);}')
+				tar xzf ${PEARPACKAGENAME}
+			else
+				echo "Downloading pear package '${PEARPACKAGENAME}' failed!";
+				echo "${TEMPMSG}"
+				echo "Check http://pear.php.net/ for available packages.";
+				exit 0
+			fi
 		fi
 	fi
 else
@@ -161,6 +167,8 @@ if [ "$HASPHPSCRIPT" = "1" ]; then
 	DEPENDS="${DEPENDS}, php5-cli"
 fi
 
+declare -r SED_DELIM=$(echo -en "\001")
+
 sed -e "s/##date##/`(LC_ALL=C; date -R)`/g" \
     -e "s/##maintainer##/${DEBMAINTAINER}/g" \
     -e "s/##upstream##/${UPSTREAM}/g" \
@@ -173,11 +181,11 @@ if [ -n "${LICENSEFILE}" ]; then
 fi
 sed -e "s/##packagename##/${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}/g" \
     -e "s/##maintainer##/${DEBMAINTAINER}/g" \
-    -e "s§##summary##§${SUMMARY}§g" \
+    -e "s${SED_DELIM}##summary##${SED_DELIM}${SUMMARY}${SED_DELIM}g" \
     -e "s/##depends##/${DEPENDS}/g" \
     -e "s/##architecture##/${DEBARCH}/g" \
 		${DEBTEMPDIR}/control > ${SRCPACKAGEDIR}/debian/control
-		${PHPPKGINFO} ${SRCPACKAGEDIR} description | fmt -w 70|sed -e "s§^[ \t]*$§.§g" -e "s§^§ §g" >> ${SRCPACKAGEDIR}/debian/control
+		${PHPPKGINFO} ${SRCPACKAGEDIR} description | fmt -w 70|sed -e "s${SED_DELIM}^[ \t]*\$${SED_DELIM}.${SED_DELIM}g" -e "s${SED_DELIM}^${SED_DELIM} ${SED_DELIM}g" >> ${SRCPACKAGEDIR}/debian/control
 sed -e "s/##packagename##/${DEBPACKAGEPREFIX}${PHP_PKG_LOWNAME}/g" \
     -e "s/##version##/${VERSION}/g" \
     -e "s/##pearpkgname##/${PHP_PKG_NAME}/g" \
